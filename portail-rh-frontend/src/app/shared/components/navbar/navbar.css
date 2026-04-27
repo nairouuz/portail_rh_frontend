@@ -1,0 +1,75 @@
+.navbar {
+  background: linear-gradient(135deg, #0a0a0f 0%, #121218 100%);
+  border-bottom: 1px solid rgba(196, 164, 124, 0.2);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.navbar-logo i {
+  font-size: 28px;
+  color: #c4a47c;
+}
+
+.navbar-logo span {
+  font-size: 20px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #c4a47c 0%, #e8d4b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.user-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e8e8e8;
+}
+
+.user-role {
+  font-size: 11px;
+  color: #c4a47c;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid rgba(139, 90, 90, 0.5);
+  color: #8b5a5a;
+  padding: 8px 16px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.logout-btn:hover {
+  background: rgba(139, 90, 90, 0.15);
+  border-color: #8b5a5a;
+}

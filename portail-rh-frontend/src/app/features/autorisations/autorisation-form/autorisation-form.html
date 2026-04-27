@@ -1,0 +1,78 @@
+<div class="form-container">
+  <div class="form-header">
+    <div class="header-title">
+      <h2>Nouvelle demande d'autorisation</h2>
+      <p>Remplissez le formulaire ci-dessous</p>
+    </div>
+    <button class="btn-retour" (click)="retour()">
+      <i class="fas fa-arrow-left"></i>
+      Retour
+    </button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #autorisationForm="ngForm">
+    <div class="form-group">
+      <label>
+        <i class="fas fa-calendar-alt"></i>
+        Date *
+      </label>
+      <input
+        type="date"
+        name="dateAutorisation"
+        [(ngModel)]="demande.dateAutorisation"
+        required
+        class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-clock"></i>
+        Heure de début *
+      </label>
+      <input
+        type="time"
+        name="heureDebut"
+        [(ngModel)]="demande.heureDebut"
+        required
+        class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-clock"></i>
+        Heure de fin *
+      </label>
+      <input
+        type="time"
+        name="heureFin"
+        [(ngModel)]="demande.heureFin"
+        required
+        class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-file-alt"></i>
+        Motif *
+      </label>
+      <textarea
+        name="motif"
+        [(ngModel)]="demande.motif"
+        required
+        rows="4"
+        class="form-control"
+        placeholder="Décrivez le motif de votre autorisation..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="retour()">
+        <i class="fas fa-times"></i>
+        Annuler
+      </button>
+      <button type="submit" class="btn-submit" [disabled]="!autorisationForm.valid">
+        <i class="fas fa-paper-plane"></i>
+        Soumettre
+      </button>
+    </div>
+  </form>
+</div>

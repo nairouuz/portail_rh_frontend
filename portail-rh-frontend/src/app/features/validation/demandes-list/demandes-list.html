@@ -1,0 +1,56 @@
+<div class="validation-container">
+  <div class="header">
+    <div class="header-title">
+      <h2>Demandes à valider</h2>
+      <p>Gérez les demandes en attente de votre validation</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="demandes-table">
+        <thead>
+          <tr>
+            <th>Employé</th>
+            <th>Type</th>
+            <th>Dates</th>
+            <th>Motif</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let demande of demandes">
+            <td>{{ demande.employeNom }}</td>
+            <td>
+              <span class="type-badge" [ngClass]="demande.type">
+                {{ getTypeLabel(demande.type) }}
+              </span>
+            </td>
+            <td>{{ demande.date_debut }} → {{ demande.date_fin }}</td>
+            <td>{{ demande.motif }}</td>
+            <td>
+              <span class="statut-badge statut-attente">
+                {{ getStatutLabel(demande.statut) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="btn-approuver" (click)="approuverDemande(demande)">
+                <i class="fas fa-check"></i> Approuver
+              </button>
+              <button class="btn-refuser" (click)="refuserDemande(demande)">
+                <i class="fas fa-times"></i> Refuser
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="demandes.length === 0">
+            <td colspan="6" class="empty-state">
+              <i class="fas fa-check-circle"></i>
+              <p>Aucune demande à valider</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

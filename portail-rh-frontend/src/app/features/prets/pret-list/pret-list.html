@@ -1,0 +1,73 @@
+<div class="pret-container">
+  <div class="header">
+    <div class="header-title">
+      <h2>Mes demandes de prêt</h2>
+      <p>Gérez vos demandes de prêt</p>
+    </div>
+    <button type="button" class="btn-nouveau" (click)="nouvelleDemande()">
+      <i class="fas fa-plus"></i> Nouvelle demande
+    </button>
+  </div>
+
+  <div class="table-card">
+
+    <!-- Chargement -->
+    <div *ngIf="demandes === undefined" class="empty-state">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+      <p>Chargement des demandes...</p>
+    </div>
+
+    <!-- Erreur -->
+    <div *ngIf="erreur" class="empty-state erreur">
+      <i class="fas fa-exclamation-triangle fa-2x"></i>
+      <p>{{ erreur }}</p>
+    </div>
+
+    <!-- Tableau -->
+    <div *ngIf="demandes && demandes.length > 0" class="table-responsive">
+      <table class="pret-table">
+        <thead>
+          <tr>
+            <th>Date demande</th>
+            <th>Montant</th>
+            <th>Nb mensualités</th>
+            <th>Motif</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of demandes">
+            <td>{{ d.dateDemande | date:'dd/MM/yyyy' }}</td>
+            <td>{{ d.montant | number:'1.2-2' }} DT</td>
+            <td>{{ d.nombreMensualites }}</td>
+            <td>{{ d.motif }}</td>
+            <td>
+              <span class="statut-badge" [ngClass]="getStatutClass(d.statut)">
+                {{ getStatutLabel(d.statut) }}
+              </span>
+            </td>
+            <td>
+              <button
+                class="btn-annuler"
+                (click)="supprimer(d.id)"
+                *ngIf="d.statut === 'EN_ATTENTE'">
+                <i class="fas fa-trash-alt"></i> Annuler
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Aucune demande -->
+    <div *ngIf="demandes && demandes.length === 0 && !erreur" class="empty-state">
+      <i class="fas fa-info-circle fa-2x"></i>
+      <p>Aucune demande de prêt trouvée</p>
+      <button class="btn-primary-small" (click)="nouvelleDemande()">
+        Créer votre première demande
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,191 @@
+/* Réutilise tout le style du dashboard employé + ajouts admin */
+
+.dashboard-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  min-height: calc(100vh - 60px);
+}
+
+.dashboard-header { margin-bottom: 32px; }
+
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.welcome-badge {
+  background: linear-gradient(135deg, #c9a96e 0%, #b8945a 100%);
+  padding: 24px 32px;
+  border-radius: 20px;
+  color: #1a1a1a;
+  flex: 1;
+}
+
+/* Badge admin — couleur différente pour distinguer */
+.admin-badge {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%) !important;
+  color: white !important;
+}
+
+.greeting { font-size: 14px; opacity: 0.9; display: block; margin-bottom: 8px; }
+.user-name { font-size: 28px; font-weight: 700; margin: 0 0 8px 0; }
+.user-role { font-size: 14px; margin: 0; opacity: 0.8; }
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.date-card {
+  background: rgba(255,255,255,0.05);
+  padding: 16px 24px;
+  border-radius: 12px;
+  color: #c9a96e;
+  font-size: 16px;
+}
+.date-card i { margin-right: 10px; }
+
+.btn-logout {
+  background: rgba(220, 53, 69, 0.2);
+  border: 1px solid rgba(220, 53, 69, 0.4);
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #dc3545;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn-logout:hover { background: rgba(220, 53, 69, 0.4); }
+
+/* Stats grid — 3 colonnes pour admin */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #1e1e1e 0%, #252525 100%);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(201, 169, 110, 0.1);
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201, 169, 110, 0.3);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.stat-icon {
+  width: 60px; height: 60px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+
+.icon-employes    { background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%); color: white; }
+.icon-attente     { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); color: #1a1a1a; }
+.icon-conges      { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+.icon-prets       { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+.icon-avances     { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #1a1a1a; }
+.icon-autorisations { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #1a1a1a; }
+
+.stat-info h3 { font-size: 32px; font-weight: 700; margin: 0; color: #c9a96e; }
+.stat-info p  { font-size: 14px; color: #aaa; margin: 5px 0 10px 0; }
+.stat-detail  { display: flex; gap: 12px; font-size: 12px; }
+.stat-detail .pending  { color: #ffc107; }
+.stat-detail .approved { color: #28a745; }
+
+.section-title {
+  font-size: 18px; font-weight: 600;
+  color: #c9a96e; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.quick-actions { margin-bottom: 32px; }
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.action-btn {
+  background: linear-gradient(135deg, #c9a96e 0%, #b8945a 100%);
+  border: none; padding: 14px 20px; border-radius: 12px;
+  color: #1a1a1a; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  cursor: pointer; transition: all 0.3s ease;
+}
+.action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(201,169,110,0.3); }
+
+.recent-section {
+  background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+  border-radius: 16px; padding: 24px;
+  border: 1px solid rgba(201, 169, 110, 0.1);
+}
+
+.recent-table-container { overflow-x: auto; }
+
+.recent-table { width: 100%; border-collapse: collapse; }
+.recent-table th {
+  text-align: left; padding: 12px;
+  color: #c9a96e; font-weight: 600;
+  border-bottom: 1px solid #333;
+}
+.recent-table td { padding: 12px; color: #ddd; border-bottom: 1px solid #2a2a2a; }
+
+.type-badge {
+  display: inline-block; padding: 4px 12px;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+}
+.type-congé        { background: #667eea; color: white; }
+.type-prêt         { background: #f5576c; color: white; }
+.type-avance       { background: #4facfe; color: #1a1a1a; }
+.type-autorisation { background: #43e97b; color: #1a1a1a; }
+
+.status-badge {
+  display: inline-block; padding: 4px 12px;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+}
+.status-pending  { background: #ffc107; color: #1a1a1a; }
+.status-chef     { background: #17a2b8; color: white; }
+.status-approved { background: #28a745; color: white; }
+.status-rejected { background: #dc3545; color: white; }
+
+.view-btn {
+  background: rgba(201,169,110,0.2); border: none;
+  padding: 6px 12px; border-radius: 8px;
+  color: #c9a96e; cursor: pointer; transition: all 0.3s ease;
+}
+.view-btn:hover { background: rgba(201,169,110,0.4); }
+
+.loading-spinner { text-align: center; padding: 40px; }
+.spinner {
+  width: 40px; height: 40px; margin: 0 auto 15px;
+  border: 3px solid #333; border-top-color: #c9a96e;
+  border-radius: 50%; animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 40px; color: #aaa; }
+.empty-state i { font-size: 48px; margin-bottom: 15px; color: #28a745; opacity: 0.7; }
+
+@media (max-width: 768px) {
+  .dashboard-container { padding: 16px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .actions-grid { grid-template-columns: 1fr; }
+  .welcome-badge { padding: 16px 20px; }
+  .user-name { font-size: 22px; }
+}

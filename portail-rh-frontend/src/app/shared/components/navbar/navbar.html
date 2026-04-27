@@ -1,0 +1,20 @@
+<div class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo" routerLink="/dashboard">
+      <i class="fas fa-building"></i>
+      <span>Portail RH</span>
+    </div>
+    
+    <div class="navbar-right">
+      <div class="user-menu">
+        <span class="user-name">👤 {{ userName }}</span>
+        <span class="user-role">{{ userRole }}</span>
+      </div>
+      
+      <button class="logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Déconnexion
+      </button>
+    </div>
+  </div>
+</div>

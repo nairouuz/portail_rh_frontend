@@ -1,0 +1,261 @@
+<div class="app-layout" [class.sidebar-closed]="!sidebarOpen">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo"><i class="fas fa-building"></i><span class="logo-text">Portail RH</span></div>
+      <button class="sidebar-toggle" (click)="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    </div>
+    <div class="sidebar-profile">
+      <div class="avatar">{{ getInitials() }}</div>
+      <div class="profile-info">
+        <span class="profile-name">{{ userName }}</span>
+        <span class="profile-role">Chef hiérarchique</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" [class.active]="activeSection === 'dashboard'" (click)="setSection('dashboard')">
+        <i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'conges'" (click)="setSection('conges')">
+        <i class="fas fa-umbrella-beach"></i><span>Validation congés</span>
+        <span class="nav-badge" *ngIf="stats.conges.enAttente > 0">{{ stats.conges.enAttente }}</span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'autorisations'" (click)="setSection('autorisations')">
+        <i class="fas fa-clock"></i><span>Validation autorisations</span>
+        <span class="nav-badge" *ngIf="stats.autorisations.enAttente > 0">{{ stats.autorisations.enAttente }}</span>
+      </a>
+      <div class="nav-divider"></div>
+      <a class="nav-item nav-logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <button class="topbar-toggle" (click)="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="topbar-title">
+        <span *ngIf="activeSection === 'dashboard'">Tableau de bord</span>
+        <span *ngIf="activeSection === 'conges'">Validation des congés</span>
+        <span *ngIf="activeSection === 'autorisations'">Validation des autorisations</span>
+      </div>
+      <div class="topbar-date"><i class="fas fa-calendar-alt"></i>{{ today | date:'EEEE dd MMMM yyyy' }}</div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- DASHBOARD -->
+      <div *ngIf="activeSection === 'dashboard'">
+        <div class="welcome-card">
+          <div class="welcome-text">
+            <h1>Bonjour, {{ userName }} 👋</h1>
+            <p>Bienvenue sur votre espace Chef Hiérarchique</p>
+          </div>
+          <div class="welcome-avatar">{{ getInitials() }}</div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-total">
+            <div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ getTotalEnAttente() }}</div>
+              <div class="kpi-label">Total à traiter</div>
+              <div class="kpi-sub"><span class="dot orange"></span>Demandes en attente</div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-conges" (click)="setSection('conges')">
+            <div class="kpi-icon"><i class="fas fa-umbrella-beach"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ stats.conges.total }}</div>
+              <div class="kpi-label">Congés équipe</div>
+              <div class="kpi-sub"><span class="dot orange"></span>{{ stats.conges.enAttente }} en attente</div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-autorisations" (click)="setSection('autorisations')">
+            <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ stats.autorisations.total }}</div>
+              <div class="kpi-label">Autorisations équipe</div>
+              <div class="kpi-sub"><span class="dot orange"></span>{{ stats.autorisations.enAttente }} en attente</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-header"><i class="fas fa-bolt"></i> Actions rapides</div>
+          <div class="quick-grid">
+            <button class="quick-btn" (click)="setSection('conges')"><i class="fas fa-umbrella-beach"></i> Valider les congés</button>
+            <button class="quick-btn" (click)="setSection('autorisations')"><i class="fas fa-clock"></i> Valider les autorisations</button>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-header"><i class="fas fa-history"></i> Demandes en attente de mon équipe</div>
+          <div *ngIf="loading" class="loading-state"><div class="spinner"></div><p>Chargement...</p></div>
+          <table *ngIf="!loading && recentDemandes.length > 0" class="data-table">
+            <thead>
+              <tr>
+                <th>Type</th><th>Employé</th><th>Date</th>
+                <th>Détail</th><th>Statut</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of recentDemandes">
+                <td>
+                  <span class="type-pill" [ngClass]="d.type === 'Congé' ? 'type-conge' : 'type-autorisation'">{{ d.type }}</span>
+                </td>
+                <td class="employe-cell">
+                  <div class="employe-avatar">{{ d.employeNom ? d.employeNom[0] : '?' }}</div>
+                  {{ d.employeNom }}
+                </td>
+                <td>{{ d.date | date:'dd/MM/yyyy' }}</td>
+                <td class="detail-cell">{{ getDetailText(d) }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(d.statut)">{{ getStatutLabel(d.statut) }}</span></td>
+                <td>
+                  <div class="action-btns" *ngIf="d.statut === 'EN_ATTENTE'">
+                    <button class="btn-valider" (click)="valider(d.type === 'Congé' ? 'conge' : 'autorisation', d.id)">
+                      <i class="fas fa-check"></i> Valider
+                    </button>
+                    <button class="btn-refuser" (click)="refuser(d.type === 'Congé' ? 'conge' : 'autorisation', d.id)">
+                      <i class="fas fa-times"></i> Refuser
+                    </button>
+                  </div>
+                  <span *ngIf="d.statut === 'VALIDEE_CHEF'" class="traite-label">
+                    <i class="fas fa-check"></i> Transmis au RH
+                  </span>
+                  <span *ngIf="d.statut === 'VALIDEE_RH'" class="traite-label">
+                    <i class="fas fa-check-double"></i> Approuvé RH
+                  </span>
+                  <span *ngIf="d.statut === 'REFUSEE'" class="traite-label refused">
+                    <i class="fas fa-times"></i> Refusé
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="!loading && recentDemandes.length === 0" class="empty-state">
+            <i class="fas fa-check-circle"></i><p>✅ Aucune demande en attente</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONGÉS -->
+      <div *ngIf="activeSection === 'conges'">
+        <div class="page-header">
+          <h2><i class="fas fa-umbrella-beach"></i> Demandes de congé — Mon équipe</h2>
+        </div>
+        <div class="stats-row">
+          <div class="mini-stat"><span>{{ stats.conges.total }}</span> Total</div>
+          <div class="mini-stat orange"><span>{{ stats.conges.enAttente }}</span> En attente</div>
+          <div class="mini-stat green"><span>{{ stats.conges.approuves }}</span> Approuvés</div>
+          <div class="mini-stat red"><span>{{ stats.conges.refuses }}</span> Refusés</div>
+        </div>
+        <div class="section-card" *ngIf="conges.length > 0">
+          <div class="section-header"><i class="fas fa-hourglass-half"></i> Demandes à traiter</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Employé</th><th>Date début</th><th>Date fin</th>
+                <th>Motif</th><th>Statut</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of conges">
+                <td class="employe-cell">
+                  <div class="employe-avatar">
+                    {{ (c.prenomEmploye || c.nomEmploye) ? (c.prenomEmploye || c.nomEmploye)[0] : '?' }}
+                  </div>
+                  {{ c.prenomEmploye }} {{ c.nomEmploye }}
+                </td>
+                <td>{{ c.dateDebut | date:'dd/MM/yyyy' }}</td>
+                <td>{{ c.dateFin | date:'dd/MM/yyyy' }}</td>
+                <td class="detail-cell">{{ c.motif || '-' }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(c.statut)">{{ getStatutLabel(c.statut) }}</span></td>
+                <td>
+                  <div class="action-btns" *ngIf="c.statut === 'EN_ATTENTE'">
+                    <button class="btn-valider" (click)="valider('conge', c.id)">
+                      <i class="fas fa-check"></i> Valider
+                    </button>
+                    <button class="btn-refuser" (click)="refuser('conge', c.id)">
+                      <i class="fas fa-times"></i> Refuser
+                    </button>
+                  </div>
+                  <span *ngIf="c.statut === 'VALIDEE_CHEF'" class="traite-label">
+                    <i class="fas fa-check"></i> Transmis au RH
+                  </span>
+                  <span *ngIf="c.statut === 'VALIDEE_RH'" class="traite-label">
+                    <i class="fas fa-check-double"></i> Approuvé RH
+                  </span>
+                  <span *ngIf="c.statut === 'REFUSEE'" class="traite-label refused">
+                    <i class="fas fa-times"></i> Refusé
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="conges.length === 0" class="empty-state-full">
+          <i class="fas fa-umbrella-beach"></i><p>Aucune demande de congé de votre équipe</p>
+        </div>
+      </div>
+
+      <!-- AUTORISATIONS -->
+      <div *ngIf="activeSection === 'autorisations'">
+        <div class="page-header">
+          <h2><i class="fas fa-clock"></i> Demandes d'autorisation — Mon équipe</h2>
+        </div>
+        <div class="stats-row">
+          <div class="mini-stat"><span>{{ stats.autorisations.total }}</span> Total</div>
+          <div class="mini-stat orange"><span>{{ stats.autorisations.enAttente }}</span> En attente</div>
+          <div class="mini-stat green"><span>{{ stats.autorisations.approuves }}</span> Approuvées</div>
+          <div class="mini-stat red"><span>{{ stats.autorisations.refuses }}</span> Refusées</div>
+        </div>
+        <div class="section-card" *ngIf="autorisations.length > 0">
+          <div class="section-header"><i class="fas fa-hourglass-half"></i> Demandes à traiter</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Employé</th><th>Date demande</th><th>Motif</th>
+                <th>Statut</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of autorisations">
+                <td class="employe-cell">
+                  <div class="employe-avatar">
+                    {{ (a.prenomEmploye || a.nomEmploye) ? (a.prenomEmploye || a.nomEmploye)[0] : '?' }}
+                  </div>
+                  {{ a.prenomEmploye }} {{ a.nomEmploye }}
+                </td>
+                <td>{{ a.dateDemande | date:'dd/MM/yyyy' }}</td>
+                <td class="detail-cell">{{ a.motif || '-' }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(a.statut)">{{ getStatutLabel(a.statut) }}</span></td>
+                <td>
+                  <div class="action-btns" *ngIf="a.statut === 'EN_ATTENTE'">
+                    <button class="btn-valider" (click)="valider('autorisation', a.id)">
+                      <i class="fas fa-check"></i> Valider
+                    </button>
+                    <button class="btn-refuser" (click)="refuser('autorisation', a.id)">
+                      <i class="fas fa-times"></i> Refuser
+                    </button>
+                  </div>
+                  <span *ngIf="a.statut === 'VALIDEE_CHEF'" class="traite-label">
+                    <i class="fas fa-check"></i> Transmis au RH
+                  </span>
+                  <span *ngIf="a.statut === 'VALIDEE_RH'" class="traite-label">
+                    <i class="fas fa-check-double"></i> Approuvé RH
+                  </span>
+                  <span *ngIf="a.statut === 'REFUSEE'" class="traite-label refused">
+                    <i class="fas fa-times"></i> Refusé
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="autorisations.length === 0" class="empty-state-full">
+          <i class="fas fa-clock"></i><p>Aucune demande d'autorisation de votre équipe</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>

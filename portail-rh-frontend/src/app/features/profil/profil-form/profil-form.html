@@ -1,0 +1,100 @@
+<div class="profil-container">
+  <div class="header">
+    <div class="header-title">
+      <h2>Mon dossier personnel</h2>
+      <p>Consultez vos informations personnelles et professionnelles</p>
+    </div>
+  </div>
+
+  <div class="profil-card">
+    <!-- Affichage sous forme de tableau -->
+    <div class="info-section">
+      <h3><i class="fas fa-user"></i> Informations personnelles</h3>
+      <table class="info-table">
+        <tr>
+          <th>Prénom</th>
+          <td>{{ employe.prenom }}</td>
+          <th>Nom</th>
+          <td>{{ employe.nom }}</td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>{{ employe.email }}</td>
+          <th>Téléphone</th>
+          <td>{{ employe.telephone || '-' }}</td>
+        </tr>
+        <tr>
+          <th>Date de naissance</th>
+          <td>{{ employe.dateNaissance || '-' }}</td>
+          <th>CIN</th>
+          <td>{{ employe.cin || '-' }}</td>
+        </tr>
+        <tr>
+          <th>Nationalité</th>
+          <td>{{ employe.nationalite || '-' }}</td>
+          <th>Situation familiale</th>
+          <td>{{ employe.situationFamiliale || '-' }}</td>
+        </tr>
+        <tr>
+          <th>Adresse</th>
+          <td colspan="3">{{ employe.adresse || '-' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="info-section">
+      <h3><i class="fas fa-briefcase"></i> Informations professionnelles</h3>
+      <table class="info-table">
+        <tr>
+          <th>Département</th>
+          <td>{{ employe.departement }}</td>
+          <th>Grade / Fonction</th>
+          <td>{{ employe.grade || '-' }}</td>
+        </tr>
+        <tr>
+          <th>Date d'embauche</th>
+          <td>{{ employe.dateEmbauche || '-' }}</td>
+          <th>Salaire brut</th>
+          <td>{{ employe.salaire ? employe.salaire + ' €' : '-' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Formulaire de modification -->
+    <div class="edit-section">
+      <h3><i class="fas fa-edit"></i> Modifier mes informations</h3>
+      <form (ngSubmit)="onSubmit()" #profilForm="ngForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" [(ngModel)]="employe.telephone" name="telephone" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Adresse</label>
+            <input type="text" [(ngModel)]="employe.adresse" name="adresse" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Situation familiale</label>
+            <select [(ngModel)]="employe.situationFamiliale" name="situationFamiliale" class="form-control">
+              <option value="Célibataire">Célibataire</option>
+              <option value="Marié(e)">Marié(e)</option>
+              <option value="Divorcé(e)">Divorcé(e)</option>
+              <option value="Veuf/Veuve">Veuf/Veuve</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Téléphone d'urgence</label>
+            <input type="tel" [(ngModel)]="employe.telephoneUrgence" name="telephoneUrgence" class="form-control">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-save" [disabled]="!profilForm.valid">
+            <i class="fas fa-save"></i> Enregistrer les modifications
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

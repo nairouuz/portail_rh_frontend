@@ -1,0 +1,118 @@
+<div class="document-container">
+  <div class="header">
+    <div class="header-title">
+      <h2>Mes demandes de documents</h2>
+      <p>Attestations, bulletins de paie, etc.</p>
+    </div>
+    <button class="btn-nouveau" (click)="ouvrirFormulaire()">
+      <i class="fas fa-plus"></i> Nouvelle demande
+    </button>
+  </div>
+
+  <!-- Chargement -->
+  <div *ngIf="documents === undefined" class="empty-state">
+    <div class="spinner"></div>
+    <p>Chargement des demandes...</p>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="erreur" class="empty-state erreur">
+    <i class="fas fa-exclamation-triangle fa-2x"></i>
+    <p>{{ erreur }}</p>
+  </div>
+
+  <!-- Tableau des demandes -->
+  <div *ngIf="documents && documents.length > 0" class="table-responsive">
+    <table class="document-table">
+      <thead>
+        <tr>
+          <th>Date demande</th>
+          <th>Type de document</th>
+          <th>Description</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let doc of documents">
+          <td>{{ doc.dateDemande | date:'dd/MM/yyyy' }}</td>
+          <td><strong>{{ doc.typeDocument }}</strong></td>
+          <td>{{ doc.description }}</td>
+          <td>
+            <span class="statut-badge" [ngClass]="getStatutClass(doc.statut)">
+              {{ getStatutLabel(doc.statut) }}
+            </span>
+          </td>
+          <td>
+            <button 
+              class="btn-annuler" 
+              (click)="supprimer(doc.id)"
+              *ngIf="doc.statut === 'EN_ATTENTE'">
+              <i class="fas fa-trash-alt"></i> Annuler
+            </button>
+            <span *ngIf="doc.fichierUrl && doc.statut === 'VALIDEE'" class="btn-telecharger">
+              <i class="fas fa-download"></i> Télécharger
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Aucune demande -->
+  <div *ngIf="documents && documents.length === 0 && !erreur" class="empty-state">
+    <i class="fas fa-file-alt fa-3x"></i>
+    <p>Aucune demande de document</p>
+    <button class="btn-primary-small" (click)="ouvrirFormulaire()">
+      Créer votre première demande
+    </button>
+  </div>
+
+  <!-- Modal Formulaire -->
+  <div class="modal" *ngIf="showForm">
+    <div class="modal-overlay" (click)="fermerFormulaire()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>
+          <i class="fas fa-file-alt"></i>
+          Nouvelle demande de document
+        </h3>
+        <button class="modal-close" (click)="fermerFormulaire()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Type de document *</label>
+          <select [(ngModel)]="nouvelleDemande.typeDocument" class="form-control">
+            <option value="">Sélectionnez un type</option>
+            <option *ngFor="let type of typesDocument" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Description / Motif *</label>
+          <textarea 
+            [(ngModel)]="nouvelleDemande.description" 
+            rows="4" 
+            class="form-control" 
+            placeholder="Décrivez votre demande (ex: pour renouvellement de visa, pour banque, etc.)"></textarea>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="fermerFormulaire()" [disabled]="enCours">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+        <button class="btn-submit" (click)="ajouterDocument()" [disabled]="enCours">
+          <i class="fas fa-spinner fa-spin" *ngIf="enCours"></i>
+          <i class="fas fa-paper-plane" *ngIf="!enCours"></i>
+          {{ enCours ? 'Envoi...' : 'Soumettre' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

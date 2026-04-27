@@ -1,0 +1,116 @@
+<div class="home-page">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Bienvenue sur <span>Portail RH</span></h1>
+        <p>Votre espace personnel de gestion des ressources humaines</p>
+        <div class="hero-buttons">
+          <button class="btn-primary" (click)="goToDashboard()">
+            <i class="fas fa-chart-line"></i>
+            Accéder à mon espace
+          </button>
+          <button class="btn-secondary" (click)="goToDemandes()">
+            <i class="fas fa-calendar-alt"></i>
+            Voir mes demandes
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services">
+    <div class="container">
+      <div class="section-header">
+        <h2>Nos services</h2>
+        <p>Une plateforme complète pour gérer vos demandes RH</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card" (click)="goTo('/conges')">
+          <div class="service-icon">
+            <i class="fas fa-umbrella-beach"></i>
+          </div>
+          <h3>Gestion des congés</h3>
+          <p>Demandez et suivez vos congés en quelques clics</p>
+        </div>
+        <div class="service-card" (click)="goTo('/prets')">
+          <div class="service-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+          <h3>Prêts & Avances</h3>
+          <p>Gérez vos demandes de prêts financiers</p>
+        </div>
+        <div class="service-card" (click)="goTo('/autorisations')">
+          <div class="service-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3>Autorisations</h3>
+          <p>Soumettez vos demandes d'autorisation</p>
+        </div>
+        <div class="service-card" (click)="goTo('/documents')">
+          <div class="service-icon">
+            <i class="fas fa-folder-open"></i>
+          </div>
+          <h3>Documents</h3>
+          <p>Accédez à vos documents administratifs</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">{{ stats.demandesTotal }}</div>
+          <div class="stat-label">Demandes totales</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ stats.enAttente }}</div>
+          <div class="stat-label">En attente</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ stats.approuvees }}</div>
+          <div class="stat-label">Approuvées</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">9</div>
+          <div class="stat-label">Employés</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <i class="fas fa-building"></i>
+          <h3>Portail RH</h3>
+          <p>Solutions RH modernes pour entreprises innovantes</p>
+        </div>
+        <div class="footer-links">
+          <div class="link-group">
+            <h4>Liens rapides</h4>
+            <a (click)="goTo('/dashboard')">Tableau de bord</a>
+            <a (click)="goTo('/conges')">Mes congés</a>
+            <a (click)="goTo('/autorisations')">Autorisations</a>
+          </div>
+          <div class="link-group">
+            <h4>Support</h4>
+            <a href="#">Aide</a>
+            <a href="#">Contact</a>
+            <a href="#">FAQ</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Portail RH - Tous droits réservés</p>
+      </div>
+    </div>
+  </footer>
+</div>

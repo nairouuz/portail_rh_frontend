@@ -1,0 +1,134 @@
+.pret-container {
+  padding: 20px;
+  background: #0a0a0f;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #121218;
+  border-radius: 10px;
+}
+
+.header-title h2 {
+  color: #c4a47c;
+  margin: 0;
+}
+
+.btn-nouveau {
+  background: #c4a47c;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.table-card {
+  background: #121218;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.pret-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pret-table th, .pret-table td {
+  padding: 12px;
+  text-align: left;
+  color: #e8e8e8;
+  border-bottom: 1px solid #2a2a30;
+}
+
+.pret-table th {
+  color: #c4a47c;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: #1a1a1f;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-body div {
+  margin-bottom: 15px;
+}
+
+.modal-body label {
+  display: block;
+  margin-bottom: 5px;
+  color: #c4a47c;
+}
+
+.modal-body input, .modal-body select, .modal-body textarea {
+  width: 100%;
+  padding: 10px;
+  background: #0a0a0f;
+  border: 1px solid #2a2a30;
+  border-radius: 5px;
+  color: #fff;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-footer button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.modal-footer button:first-child {
+  background: transparent;
+  border: 1px solid #8b5a5a;
+  color: #8b5a5a;
+}
+
+.modal-footer button:last-child {
+  background: #c4a47c;
+  border: none;
+  color: #0a0a0f;
+}

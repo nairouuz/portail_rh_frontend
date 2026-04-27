@@ -1,0 +1,498 @@
+<div class="app-layout" [class.sidebar-closed]="!sidebarOpen">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fas fa-building"></i>
+        <span class="logo-text">Portail RH</span>
+      </div>
+      <button class="sidebar-toggle" (click)="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <!-- Profil mini -->
+    <div class="sidebar-profile">
+      <div class="avatar">{{ getInitials() }}</div>
+      <div class="profile-info">
+        <span class="profile-name">{{ userName }}</span>
+        <span class="profile-role">Employé</span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <a class="nav-item" [class.active]="activeSection === 'dashboard'"
+         (click)="setSection('dashboard')">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Tableau de bord</span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'conges'"
+         (click)="setSection('conges')">
+        <i class="fas fa-umbrella-beach"></i>
+        <span>Congés</span>
+        <span class="nav-badge" *ngIf="stats.conges.enAttente > 0">
+          {{ stats.conges.enAttente }}
+        </span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'prets'"
+         (click)="setSection('prets')">
+        <i class="fas fa-hand-holding-usd"></i>
+        <span>Prêts</span>
+        <span class="nav-badge" *ngIf="stats.prets.enAttente > 0">
+          {{ stats.prets.enAttente }}
+        </span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'avances'"
+         (click)="setSection('avances')">
+        <i class="fas fa-coins"></i>
+        <span>Avances</span>
+        <span class="nav-badge" *ngIf="stats.avances.enAttente > 0">
+          {{ stats.avances.enAttente }}
+        </span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'autorisations'"
+         (click)="setSection('autorisations')">
+        <i class="fas fa-clock"></i>
+        <span>Autorisations</span>
+        <span class="nav-badge" *ngIf="stats.autorisations.enAttente > 0">
+          {{ stats.autorisations.enAttente }}
+        </span>
+      </a>
+      <a class="nav-item" [class.active]="activeSection === 'documents'"
+         (click)="setSection('documents')">
+        <i class="fas fa-file-alt"></i>
+        <span>Documents</span>
+      </a>
+      <div class="nav-divider"></div>
+      <a class="nav-item" [class.active]="activeSection === 'profil'"
+         (click)="setSection('profil')">
+        <i class="fas fa-user"></i>
+        <span>Mon profil</span>
+      </a>
+      <a class="nav-item nav-logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Déconnexion</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ===== CONTENU PRINCIPAL ===== -->
+  <main class="main-content">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="topbar-toggle" (click)="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="topbar-title">
+        <span *ngIf="activeSection === 'dashboard'">Tableau de bord</span>
+        <span *ngIf="activeSection === 'conges'">Demandes de congé</span>
+        <span *ngIf="activeSection === 'prets'">Demandes de prêt</span>
+        <span *ngIf="activeSection === 'avances'">Demandes d'avance</span>
+        <span *ngIf="activeSection === 'autorisations'">Demandes d'autorisation</span>
+        <span *ngIf="activeSection === 'documents'">Documents administratifs</span>
+        <span *ngIf="activeSection === 'profil'">Mon profil</span>
+      </div>
+      <div class="topbar-date">
+        <i class="fas fa-calendar-alt"></i>
+        {{ today | date:'EEEE dd MMMM yyyy' }}
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ==================== DASHBOARD ==================== -->
+      <div *ngIf="activeSection === 'dashboard'">
+
+        <!-- Welcome -->
+        <div class="welcome-card">
+          <div class="welcome-text">
+            <h1>Bonjour, {{ userName }} 👋</h1>
+            <p>Bienvenue sur votre espace personnel RH</p>
+          </div>
+          <div class="welcome-avatar">{{ getInitials() }}</div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-conges" (click)="setSection('conges')">
+            <div class="kpi-icon"><i class="fas fa-umbrella-beach"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ stats.conges.total }}</div>
+              <div class="kpi-label">Congés</div>
+              <div class="kpi-sub">
+                <span class="dot orange"></span>{{ stats.conges.enAttente }} en attente
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-prets" (click)="setSection('prets')">
+            <div class="kpi-icon"><i class="fas fa-hand-holding-usd"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ stats.prets.total }}</div>
+              <div class="kpi-label">Prêts</div>
+              <div class="kpi-sub">
+                <span class="dot orange"></span>{{ stats.prets.enAttente }} en attente
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-avances" (click)="setSection('avances')">
+            <div class="kpi-icon"><i class="fas fa-coins"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ stats.avances.total }}</div>
+              <div class="kpi-label">Avances</div>
+              <div class="kpi-sub">
+                <span class="dot orange"></span>{{ stats.avances.enAttente }} en attente
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-autorisations" (click)="setSection('autorisations')">
+            <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ stats.autorisations.total }}</div>
+              <div class="kpi-label">Autorisations</div>
+              <div class="kpi-sub">
+                <span class="dot orange"></span>{{ stats.autorisations.enAttente }} en attente
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-documents" (click)="setSection('documents')">
+            <div class="kpi-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-number">{{ stats.documents.total }}</div>
+              <div class="kpi-label">Documents</div>
+              <div class="kpi-sub">
+                <span class="dot orange"></span>{{ stats.documents.enAttente }} en attente
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="section-card">
+          <div class="section-header">
+            <i class="fas fa-bolt"></i> Actions rapides
+          </div>
+          <div class="quick-grid">
+            <button class="quick-btn" (click)="navigateTo('/conges/nouveau')">
+              <i class="fas fa-plus"></i> Nouveau congé
+            </button>
+            <button class="quick-btn" (click)="navigateTo('/prets/nouveau')">
+              <i class="fas fa-plus"></i> Nouveau prêt
+            </button>
+            <button class="quick-btn" (click)="navigateTo('/avances/nouveau')">
+              <i class="fas fa-plus"></i> Nouvelle avance
+            </button>
+            <button class="quick-btn" (click)="navigateTo('/autorisations/nouveau')">
+              <i class="fas fa-plus"></i> Nouvelle autorisation
+            </button>
+            <button class="quick-btn" (click)="setSection('documents')">
+              <i class="fas fa-file-alt"></i> Demander un document
+            </button>
+          </div>
+        </div>
+
+        <!-- Demandes récentes -->
+        <div class="section-card">
+          <div class="section-header">
+            <i class="fas fa-history"></i> Demandes récentes
+          </div>
+          <div *ngIf="loading" class="loading-state">
+            <div class="spinner"></div><p>Chargement...</p>
+          </div>
+          <table *ngIf="!loading && recentDemandes.length > 0" class="data-table">
+            <thead>
+              <tr>
+                <th>Type</th><th>Date</th><th>Détail</th><th>Statut</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of recentDemandes">
+                <td><span class="type-pill type-{{d.type | lowercase}}">{{d.type}}</span></td>
+                <td>{{ d.date | date:'dd/MM/yyyy' }}</td>
+                <td class="detail-cell">{{ getDetailText(d) }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(d.statut)">{{ getStatutLabel(d.statut) }}</span></td>
+                <td>
+                  <button class="btn-sm" (click)="setSection(d.type === 'Congé' ? 'conges' : d.type === 'Prêt' ? 'prets' : d.type === 'Avance' ? 'avances' : d.type === 'Autorisation' ? 'autorisations' : 'documents')">
+                    Voir <i class="fas fa-arrow-right"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="!loading && recentDemandes.length === 0" class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>Aucune demande récente</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CONGÉS ==================== -->
+      <div *ngIf="activeSection === 'conges'">
+        <div class="page-header">
+          <h2><i class="fas fa-umbrella-beach"></i> Mes demandes de congé</h2>
+          <button class="btn-new" (click)="navigateTo('/conges/nouveau')">
+            <i class="fas fa-plus"></i> Nouvelle demande
+          </button>
+        </div>
+        <div class="stats-row">
+          <div class="mini-stat"><span>{{stats.conges.total}}</span> Total</div>
+          <div class="mini-stat orange"><span>{{stats.conges.enAttente}}</span> En attente</div>
+          <div class="mini-stat green"><span>{{stats.conges.approuves}}</span> Approuvées</div>
+          <div class="mini-stat red"><span>{{stats.conges.refuses}}</span> Refusées</div>
+        </div>
+        <div class="section-card">
+          <table class="data-table" *ngIf="conges.length > 0">
+            <thead>
+              <tr><th>#</th><th>Date début</th><th>Date fin</th><th>Motif</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of conges; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.dateDebut | date:'dd/MM/yyyy' }}</td>
+                <td>{{ c.dateFin | date:'dd/MM/yyyy' }}</td>
+                <td class="detail-cell">{{ c.motif || '-' }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(c.statut)">{{ getStatutLabel(c.statut) }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="conges.length === 0" class="empty-state">
+            <i class="fas fa-umbrella-beach"></i>
+            <p>Aucune demande de congé</p>
+            <button class="btn-new" (click)="navigateTo('/conges/nouveau')">Faire une demande</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PRÊTS ==================== -->
+      <div *ngIf="activeSection === 'prets'">
+        <div class="page-header">
+          <h2><i class="fas fa-hand-holding-usd"></i> Mes demandes de prêt</h2>
+          <button class="btn-new" (click)="navigateTo('/prets/nouveau')">
+            <i class="fas fa-plus"></i> Nouvelle demande
+          </button>
+        </div>
+        <div class="stats-row">
+          <div class="mini-stat"><span>{{stats.prets.total}}</span> Total</div>
+          <div class="mini-stat orange"><span>{{stats.prets.enAttente}}</span> En attente</div>
+          <div class="mini-stat green"><span>{{stats.prets.approuves}}</span> Approuvés</div>
+          <div class="mini-stat red"><span>{{stats.prets.refuses}}</span> Refusés</div>
+        </div>
+        <div class="section-card">
+          <table class="data-table" *ngIf="prets.length > 0">
+            <thead>
+              <tr><th>#</th><th>Date demande</th><th>Montant</th><th>Motif</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of prets; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ p.dateDemande | date:'dd/MM/yyyy' }}</td>
+                <td><strong class="amount">{{ p.montant }} DT</strong></td>
+                <td class="detail-cell">{{ p.motif || '-' }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(p.statut)">{{ getStatutLabel(p.statut) }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="prets.length === 0" class="empty-state">
+            <i class="fas fa-hand-holding-usd"></i>
+            <p>Aucune demande de prêt</p>
+            <button class="btn-new" (click)="navigateTo('/prets/nouveau')">Faire une demande</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== AVANCES ==================== -->
+      <div *ngIf="activeSection === 'avances'">
+        <div class="page-header">
+          <h2><i class="fas fa-coins"></i> Mes demandes d'avance</h2>
+          <button class="btn-new" (click)="navigateTo('/avances/nouveau')">
+            <i class="fas fa-plus"></i> Nouvelle demande
+          </button>
+        </div>
+        <div class="stats-row">
+          <div class="mini-stat"><span>{{stats.avances.total}}</span> Total</div>
+          <div class="mini-stat orange"><span>{{stats.avances.enAttente}}</span> En attente</div>
+          <div class="mini-stat green"><span>{{stats.avances.approuves}}</span> Approuvées</div>
+          <div class="mini-stat red"><span>{{stats.avances.refuses}}</span> Refusées</div>
+        </div>
+        <div class="section-card">
+          <table class="data-table" *ngIf="avances.length > 0">
+            <thead>
+              <tr><th>#</th><th>Date demande</th><th>Montant</th><th>Motif</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of avances; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ a.dateDemande | date:'dd/MM/yyyy' }}</td>
+                <td><strong class="amount">{{ a.montant }} DT</strong></td>
+                <td class="detail-cell">{{ a.motif || '-' }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(a.statut)">{{ getStatutLabel(a.statut) }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="avances.length === 0" class="empty-state">
+            <i class="fas fa-coins"></i>
+            <p>Aucune demande d'avance</p>
+            <button class="btn-new" (click)="navigateTo('/avances/nouveau')">Faire une demande</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== AUTORISATIONS ==================== -->
+      <div *ngIf="activeSection === 'autorisations'">
+        <div class="page-header">
+          <h2><i class="fas fa-clock"></i> Mes demandes d'autorisation</h2>
+          <button class="btn-new" (click)="navigateTo('/autorisations/nouveau')">
+            <i class="fas fa-plus"></i> Nouvelle demande
+          </button>
+        </div>
+        <div class="stats-row">
+          <div class="mini-stat"><span>{{stats.autorisations.total}}</span> Total</div>
+          <div class="mini-stat orange"><span>{{stats.autorisations.enAttente}}</span> En attente</div>
+          <div class="mini-stat green"><span>{{stats.autorisations.approuves}}</span> Approuvées</div>
+          <div class="mini-stat red"><span>{{stats.autorisations.refuses}}</span> Refusées</div>
+        </div>
+        <div class="section-card">
+          <table class="data-table" *ngIf="autorisations.length > 0">
+            <thead>
+              <tr><th>#</th><th>Date demande</th><th>Date sortie</th><th>Motif</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of autorisations; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ a.dateDemande | date:'dd/MM/yyyy' }}</td>
+                <td>{{ a.dateSortie | date:'dd/MM/yyyy' }}</td>
+                <td class="detail-cell">{{ a.motif || '-' }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(a.statut)">{{ getStatutLabel(a.statut) }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="autorisations.length === 0" class="empty-state">
+            <i class="fas fa-clock"></i>
+            <p>Aucune demande d'autorisation</p>
+            <button class="btn-new" (click)="navigateTo('/autorisations/nouveau')">Faire une demande</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== DOCUMENTS ==================== -->
+      <div *ngIf="activeSection === 'documents'">
+        <div class="page-header">
+          <h2><i class="fas fa-file-alt"></i> Documents administratifs</h2>
+          <button class="btn-new" (click)="navigateTo('/documents/nouveau')">
+            <i class="fas fa-plus"></i> Nouvelle demande
+          </button>
+        </div>
+        <div class="doc-types-grid">
+          <div class="doc-type-card">
+            <i class="fas fa-briefcase"></i>
+            <span>Attestation de travail</span>
+          </div>
+          <div class="doc-type-card">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Attestation de salaire</span>
+          </div>
+          <div class="doc-type-card">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Bulletin de paie</span>
+          </div>
+          <div class="doc-type-card">
+            <i class="fas fa-id-card"></i>
+            <span>Autres documents</span>
+          </div>
+        </div>
+        <div class="section-card">
+          <table class="data-table" *ngIf="documents.length > 0">
+            <thead>
+              <tr><th>#</th><th>Type document</th><th>Date demande</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of documents; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ d.typeDocument || d.type || '-' }}</td>
+                <td>{{ d.dateDemande | date:'dd/MM/yyyy' }}</td>
+                <td><span [class]="'status-pill ' + getStatutClass(d.statut)">{{ getStatutLabel(d.statut) }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="documents.length === 0" class="empty-state">
+            <i class="fas fa-file-alt"></i>
+            <p>Aucune demande de document</p>
+            <button class="btn-new" (click)="navigateTo('/documents/nouveau')">Faire une demande</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PROFIL ==================== -->
+      <div *ngIf="activeSection === 'profil'">
+        <div class="page-header">
+          <h2><i class="fas fa-user"></i> Mon profil</h2>
+        </div>
+        <div class="profil-card">
+          <div class="profil-avatar">{{ getInitials() }}</div>
+          <div class="profil-info">
+            <h2>{{ user?.prenom }} {{ user?.nom }}</h2>
+            <p class="profil-role">Employé</p>
+            <div class="profil-details">
+              <div class="profil-detail-item">
+                <i class="fas fa-envelope"></i>
+                <span>{{ user?.email }}</span>
+              </div>
+              <div class="profil-detail-item" *ngIf="user?.telephone">
+                <i class="fas fa-phone"></i>
+                <span>{{ user?.telephone }}</span>
+              </div>
+              <div class="profil-detail-item">
+                <i class="fas fa-id-badge"></i>
+                <span>ID : {{ user?.id }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Récapitulatif demandes -->
+        <div class="section-card">
+          <div class="section-header">
+            <i class="fas fa-chart-bar"></i> Récapitulatif de mes demandes
+          </div>
+          <div class="recap-grid">
+            <div class="recap-item" (click)="setSection('conges')">
+              <div class="recap-icon icon-conges"><i class="fas fa-umbrella-beach"></i></div>
+              <div class="recap-info">
+                <span class="recap-number">{{ stats.conges.total }}</span>
+                <span class="recap-label">Congés</span>
+              </div>
+            </div>
+            <div class="recap-item" (click)="setSection('prets')">
+              <div class="recap-icon icon-prets"><i class="fas fa-hand-holding-usd"></i></div>
+              <div class="recap-info">
+                <span class="recap-number">{{ stats.prets.total }}</span>
+                <span class="recap-label">Prêts</span>
+              </div>
+            </div>
+            <div class="recap-item" (click)="setSection('avances')">
+              <div class="recap-icon icon-avances"><i class="fas fa-coins"></i></div>
+              <div class="recap-info">
+                <span class="recap-number">{{ stats.avances.total }}</span>
+                <span class="recap-label">Avances</span>
+              </div>
+            </div>
+            <div class="recap-item" (click)="setSection('autorisations')">
+              <div class="recap-icon icon-autorisations"><i class="fas fa-clock"></i></div>
+              <div class="recap-info">
+                <span class="recap-number">{{ stats.autorisations.total }}</span>
+                <span class="recap-label">Autorisations</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end page-content -->
+  </main>
+</div>

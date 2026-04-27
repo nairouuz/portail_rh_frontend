@@ -1,0 +1,61 @@
+<div class="autorisation-container">
+  <div class="header">
+    <div class="header-title">
+      <h2>Mes demandes d'autorisation</h2>
+      <p>Gérez vos demandes d'autorisation</p>
+    </div>
+    <button class="btn-nouveau" (click)="nouvelleDemande()">
+      <i class="fas fa-plus"></i>
+      Nouvelle demande
+    </button>
+  </div>
+
+  <div class="table-card">
+    <p style="color:white">Total: {{ demandes.length }}</p>
+    <div class="table-responsive">
+      <table class="autorisation-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Heure début</th>
+            <th>Heure fin</th>
+            <th>Motif</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let demande of demandes">
+            <td>{{ demande.dateAutorisation }}</td>
+            <td>{{ demande.heureDebut }}</td>
+            <td>{{ demande.heureFin }}</td>
+            <td>{{ demande.motif }}</td>
+            <td>
+              <span class="statut-badge" [ngClass]="getStatutClass(demande.statut)">
+                {{ getStatutLabel(demande.statut) }}
+              </span>
+            </td>
+            <td>
+              <button
+                class="btn-annuler"
+                (click)="annulerDemande(demande.id)"
+                *ngIf="demande.statut === 'EN_ATTENTE'">
+                <i class="fas fa-trash-alt"></i>
+                Annuler
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="demandes.length === 0">
+            <td colspan="6" class="empty-state">
+              <i class="fas fa-file-alt"></i>
+              <p>Aucune demande d'autorisation</p>
+              <button class="btn-primary-small" (click)="nouvelleDemande()">
+                Créer une demande
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

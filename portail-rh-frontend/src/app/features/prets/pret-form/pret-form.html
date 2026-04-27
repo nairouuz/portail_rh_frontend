@@ -1,0 +1,67 @@
+<div class="form-container">
+  <div class="form-header">
+    <div class="header-title">
+      <h2>Nouvelle demande de prêt</h2>
+      <p>Remplissez le formulaire ci-dessous</p>
+    </div>
+    <button class="btn-retour" (click)="retour()">
+      <i class="fas fa-arrow-left"></i>
+      Retour
+    </button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #pretForm="ngForm">
+    <div class="form-group">
+      <label>
+        <i class="fas fa-money-bill-wave"></i>
+        Montant (DT) *
+      </label>
+      <input
+        type="number"
+        name="montant"
+        [(ngModel)]="demande.montant"
+        required
+        min="1"
+        class="form-control"
+        placeholder="Ex: 5000">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-calendar-check"></i>
+        Nombre de mensualités *
+      </label>
+      <input
+        type="number"
+        name="nombreMensualites"
+        [(ngModel)]="demande.nombreMensualites"
+        required
+        min="1"
+        class="form-control"
+        placeholder="Ex: 12">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-file-alt"></i>
+        Motif *
+      </label>
+      <textarea
+        name="motif"
+        [(ngModel)]="demande.motif"
+        required
+        rows="4"
+        class="form-control"
+        placeholder="Décrivez le motif de votre demande..."></textarea>
+    </div>
+
+    <div class="form-actions">
+            <button class="btn-annuler" (click)="retour()" [disabled]="enCours">
+        Annuler
+      </button><button type="submit" class="btn-submit" [disabled]="!pretForm.valid || enCours">
+    <i class="fas fa-paper-plane"></i>
+    Soumettre
+  </button>
+    </div>
+  </form>
+</div>

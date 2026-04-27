@@ -1,0 +1,228 @@
+/* Dark & Gold Classy Theme - Congés */
+.conge-container {
+  padding: 28px;
+  background: linear-gradient(135deg, #0a0a0f 0%, #0f0f14 100%);
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 24px 28px;
+  background: rgba(18, 18, 24, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(196, 164, 124, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.header-title h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  background: linear-gradient(135deg, #c4a47c 0%, #d4b894 50%, #e8d4b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-title p {
+  font-size: 14px;
+  color: #6a6a72;
+  margin: 0;
+}
+
+/* Bouton Nouvelle Demande */
+.btn-nouveau {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #c4a47c 0%, #a07d56 100%);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 40px;
+  color: #0a0a0f;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(196, 164, 124, 0.2);
+}
+
+.btn-nouveau i {
+  font-size: 16px;
+}
+
+.btn-nouveau:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(196, 164, 124, 0.3);
+}
+
+/* Table Card */
+.table-card {
+  background: rgba(18, 18, 24, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(196, 164, 124, 0.1);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.conge-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.conge-table thead tr {
+  background: rgba(196, 164, 124, 0.05);
+  border-bottom: 1px solid rgba(196, 164, 124, 0.15);
+}
+
+.conge-table th {
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #c4a47c;
+}
+
+.conge-table td {
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #d0d0d8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.conge-table tbody tr:hover {
+  background: rgba(196, 164, 124, 0.03);
+  transition: background 0.3s ease;
+}
+
+/* Date et Motif */
+.date {
+  font-family: monospace;
+  letter-spacing: 0.5px;
+  color: #b8b8c0;
+}
+
+.motif {
+  font-weight: 500;
+  color: #e0e0e8;
+}
+
+/* Badge Statut */
+.statut-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.statut-attente {
+  background: rgba(196, 164, 124, 0.12);
+  color: #c4a47c;
+  border: 1px solid rgba(196, 164, 124, 0.2);
+}
+
+.statut-approuve {
+  background: rgba(74, 124, 89, 0.12);
+  color: #4a7c59;
+  border: 1px solid rgba(74, 124, 89, 0.2);
+}
+
+.statut-refuse {
+  background: rgba(139, 90, 90, 0.12);
+  color: #8b5a5a;
+  border: 1px solid rgba(139, 90, 90, 0.2);
+}
+
+/* Bouton Annuler */
+.btn-annuler {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(139, 90, 90, 0.5);
+  color: #8b5a5a;
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-annuler i {
+  font-size: 12px;
+}
+
+.btn-annuler:hover {
+  background: rgba(139, 90, 90, 0.15);
+  border-color: #8b5a5a;
+  transform: translateY(-1px);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px !important;
+  color: #6a6a72;
+}
+
+.empty-state i {
+  font-size: 48px;
+  color: rgba(196, 164, 124, 0.3);
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.btn-primary-small {
+  background: rgba(196, 164, 124, 0.1);
+  border: 1px solid rgba(196, 164, 124, 0.3);
+  color: #c4a47c;
+  padding: 8px 20px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-small:hover {
+  background: rgba(196, 164, 124, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .conge-container {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .conge-table th,
+  .conge-table td {
+    padding: 12px 12px;
+  }
+  
+  .btn-annuler {
+    padding: 4px 10px;
+  }
+}

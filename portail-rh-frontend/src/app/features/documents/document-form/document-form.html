@@ -1,0 +1,63 @@
+<div class="form-container">
+  <div class="form-header">
+    <div class="header-title">
+      <h2>Nouvelle demande de document</h2>
+      <p>Remplissez le formulaire ci-dessous</p>
+    </div>
+    <button class="btn-retour" (click)="retour()">
+      <i class="fas fa-arrow-left"></i>
+      Retour
+    </button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #documentForm="ngForm">
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-file-alt"></i>
+        Type de document *
+      </label>
+      <select
+        name="typeDocument"
+        [(ngModel)]="demande.typeDocument"
+        required
+        class="form-control">
+        <option value="">Sélectionnez un type</option>
+        <option *ngFor="let type of typesDocument" [value]="type">
+          {{ type }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-pencil-alt"></i>
+        Description / Motif *
+      </label>
+      <textarea
+        name="description"
+        [(ngModel)]="demande.description"
+        required
+        rows="4"
+        class="form-control"
+        placeholder="Décrivez votre demande (ex: pour renouvellement de visa, pour banque...)">
+      </textarea>
+    </div>
+
+    <div *ngIf="errorMessage" style="color: red; margin-bottom: 10px;">
+      {{ errorMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-annuler" (click)="retour()">
+        <i class="fas fa-times"></i>
+        Annuler
+      </button>
+      <button type="submit" class="btn-submit" [disabled]="!documentForm.valid">
+        <i class="fas fa-paper-plane"></i>
+        Soumettre
+      </button>
+    </div>
+
+  </form>
+</div>

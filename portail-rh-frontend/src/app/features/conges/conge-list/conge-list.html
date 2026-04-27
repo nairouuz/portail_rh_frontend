@@ -1,0 +1,72 @@
+<div style="padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+      <h2 style="color: #c9a96e; margin: 0;">Mes demandes de congé</h2>
+      <p style="color: #aaa; margin: 5px 0 0 0;">Gérez vos demandes de congé</p>
+    </div>
+    <button (click)="nouvelleDemande()"
+      style="padding: 10px 20px; background-color: #c9a96e; color: #1a1a1a;
+             border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+      + Nouvelle demande
+    </button>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="erreur"
+    style="text-align: center; padding: 20px; color: red;">
+    <p>{{ erreur }}</p>
+  </div>
+
+  <!-- Tableau -->
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #333; color: #c9a96e;">
+        <th style="padding: 10px; border: 1px solid #444;">Date début</th>
+        <th style="padding: 10px; border: 1px solid #444;">Date fin</th>
+        <th style="padding: 10px; border: 1px solid #444;">Motif</th>
+        <th style="padding: 10px; border: 1px solid #444;">Statut</th>
+        <th style="padding: 10px; border: 1px solid #444;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let d of demandes" style="color: white;">
+        <td style="padding: 8px; border: 1px solid #444;">
+          {{ d.dateDebut | date:'dd/MM/yyyy' }}
+        </td>
+        <td style="padding: 8px; border: 1px solid #444;">
+          {{ d.dateFin | date:'dd/MM/yyyy' }}
+        </td>
+        <td style="padding: 8px; border: 1px solid #444;">{{ d.motif }}</td>
+        <td style="padding: 8px; border: 1px solid #444;">
+          <span [ngClass]="getStatutClass(d.statut)"
+            style="padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+            {{ getStatutLabel(d.statut) }}
+          </span>
+        </td>
+        <td style="padding: 8px; border: 1px solid #444;">
+          <button
+            *ngIf="d.statut === 'EN_ATTENTE'"
+            (click)="supprimer(d.id)"
+            style="background-color: #dc3545; color: white; border: none;
+                   padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+            Annuler
+          </button>
+        </td>
+      </tr>
+
+      <!-- Aucune demande -->
+      <tr *ngIf="demandes.length === 0">
+        <td colspan="5"
+          style="padding: 40px; text-align: center; color: #aaa;">
+          <p>Aucune demande de congé</p>
+          <button (click)="nouvelleDemande()"
+            style="padding: 8px 16px; background-color: #c9a96e; color: #1a1a1a;
+                   border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+            Créer votre première demande
+          </button>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>

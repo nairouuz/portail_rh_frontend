@@ -1,0 +1,107 @@
+<div class="avance-container">
+  <div class="header">
+    <div class="header-title">
+      <h2>Mes demandes d'avance</h2>
+      <p>Gérez vos demandes d'avance sur salaire</p>
+    </div>
+    <button class="btn-nouveau" (click)="nouvelleDemande()">
+      <i class="fas fa-plus"></i> Nouvelle demande d'avance
+    </button>
+  </div>
+
+  <!-- Chargement -->
+  <div *ngIf="avances === undefined" class="empty-state">
+    <i class="fas fa-spinner fa-spin fa-2x"></i>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="erreur" class="empty-state">
+    <i class="fas fa-exclamation-triangle fa-2x"></i>
+    <p>{{ erreur }}</p>
+  </div>
+
+  <!-- Liste -->
+  <div class="demandes-list" *ngIf="avances && avances.length > 0">
+    <div class="demande-card" *ngFor="let a of avances">
+      <div class="demande-info">
+        <div class="demande-date">
+          <i class="fas fa-calendar-alt"></i>
+          {{ a.dateDemande | date:'dd/MM/yyyy' }}
+        </div>
+        <div class="demande-montant">
+          <i class="fas fa-euro-sign"></i>
+          {{ a.montant }} DT
+        </div>
+        <div class="demande-motif">
+          <i class="fas fa-file-alt"></i>
+          {{ a.motif }}
+        </div>
+        <div class="demande-statut">
+          <span class="statut-badge" [ngClass]="getStatutClass(a.statut)">
+            {{ getStatutLabel(a.statut) }}
+          </span>
+        </div>
+      </div>
+      <div class="demande-actions">
+        <button
+          class="btn-supprimer"
+          (click)="supprimer(a.id)"
+          *ngIf="a.statut === 'EN_ATTENTE'">
+          <i class="fas fa-trash-alt"></i> Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aucune demande -->
+  <div *ngIf="avances && avances.length === 0 && !erreur" class="empty-state">
+    <i class="fas fa-money-bill-wave fa-2x"></i>
+    <p>Aucune demande d'avance</p>
+    <button class="btn-primary" (click)="nouvelleDemande()">
+      Créer ma première demande
+    </button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="showForm">
+    <div class="modal-overlay" (click)="fermerFormulaire()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-money-bill-wave"></i> Nouvelle demande d'avance</h3>
+        <button class="modal-close" (click)="fermerFormulaire()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Montant (DT) *</label>
+          <input
+            type="number"
+            [(ngModel)]="nouvelleAvance.montant"
+            class="form-control"
+            placeholder="Ex: 500"
+            min="1"/>
+        </div>
+        <div class="form-group">
+          <label>Motif *</label>
+          <textarea
+            [(ngModel)]="nouvelleAvance.motif"
+            rows="3"
+            class="form-control"
+            placeholder="Décrivez le motif..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="fermerFormulaire()" [disabled]="enCours">
+          Annuler
+        </button>
+        <button class="btn-submit" (click)="ajouterAvance()" [disabled]="enCours">
+          <i class="fas fa-spinner fa-spin" *ngIf="enCours"></i>
+          <i class="fas fa-paper-plane" *ngIf="!enCours"></i>
+          {{ enCours ? 'Envoi...' : 'Soumettre' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
