@@ -1,0 +1,117 @@
+<div class="form-container">
+  <div class="form-header">
+    <div class="header-title">
+      <h2>Nouvel employé / Chef</h2>
+      <p>Remplissez le formulaire ci-dessous</p>
+    </div>
+    <button class="btn-retour" (click)="retour()">
+      <i class="fas fa-arrow-left"></i>
+      Retour
+    </button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #employeForm="ngForm">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>
+          <i class="fas fa-user"></i>
+          Prénom *
+        </label>
+        <input
+          type="text"
+          name="prenom"
+          [(ngModel)]="demande.prenom"
+          required
+          class="form-control"
+          placeholder="Prénom">
+      </div>
+
+      <div class="form-group">
+        <label>
+          <i class="fas fa-user"></i>
+          Nom *
+        </label>
+        <input
+          type="text"
+          name="nom"
+          [(ngModel)]="demande.nom"
+          required
+          class="form-control"
+          placeholder="Nom">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-envelope"></i>
+        Email *
+      </label>
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="demande.email"
+        required
+        class="form-control"
+        placeholder="email@exemple.com">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-lock"></i>
+        Mot de passe *
+      </label>
+      <input
+        type="password"
+        name="password"
+        [(ngModel)]="demande.password"
+        required
+        class="form-control"
+        placeholder="Mot de passe">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-phone"></i>
+        Téléphone
+      </label>
+      <input
+        type="text"
+        name="telephone"
+        [(ngModel)]="demande.telephone"
+        class="form-control"
+        placeholder="Ex: 55 000 000">
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fas fa-id-badge"></i>
+        Rôle *
+      </label>
+      <select
+        name="role"
+        [(ngModel)]="demande.role"
+        required
+        class="form-control">
+        <option value="UTILISATEUR">Employé</option>
+        <option value="CHEF">Chef hiérarchique</option>
+      </select>
+    </div>
+
+    <div *ngIf="errorMessage" style="color: red; margin-bottom: 10px;">
+      {{ errorMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-annuler" (click)="retour()">
+        <i class="fas fa-times"></i>
+        Annuler
+      </button>
+      <button type="submit" class="btn-submit" [disabled]="!employeForm.valid">
+        <i class="fas fa-user-plus"></i>
+        Créer
+      </button>
+    </div>
+
+  </form>
+</div>

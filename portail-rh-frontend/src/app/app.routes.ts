@@ -28,6 +28,15 @@ export const routes: Routes = [
           import('./features/dashboard/admin-dashboard/admin-dashboard')
             .then(m => m.AdminDashboardComponent)
       },
+      {
+  path: 'employes/nouveau',
+  canActivate: [authGuard],
+  data: { role: 'ADMIN' },
+  loadComponent: () =>
+    import('./features/dashboard/admin-dashboard/employe-form/employe-form')
+      .then(m => m.EmployeFormComponent)
+},
+      
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

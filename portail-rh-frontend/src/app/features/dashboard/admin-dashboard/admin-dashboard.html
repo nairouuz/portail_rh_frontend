@@ -60,7 +60,7 @@
       <button class="topbar-toggle" (click)="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div class="topbar-title">
         <span *ngIf="activeSection === 'dashboard'">Tableau de bord</span>
-        <span *ngIf="activeSection === 'employes'">Liste des employés & chefs</span>
+        <span *ngIf="activeSection === 'employes'">Gestion des employés</span>
         <span *ngIf="activeSection === 'conges'">Validation des congés</span>
         <span *ngIf="activeSection === 'autorisations'">Validation des autorisations</span>
         <span *ngIf="activeSection === 'prets'">Validation des prêts</span>
@@ -74,7 +74,7 @@
 
     <div class="page-content">
 
-      <!-- DASHBOARD -->
+      <!-- ==================== DASHBOARD ==================== -->
       <div *ngIf="activeSection === 'dashboard'">
         <div class="welcome-card">
           <div class="welcome-text">
@@ -146,6 +146,7 @@
         <div class="section-card">
           <div class="section-header"><i class="fas fa-bolt"></i> Actions rapides</div>
           <div class="quick-grid">
+            <button class="quick-btn" (click)="setSection('employes')"><i class="fas fa-user-plus"></i> Gérer employés</button>
             <button class="quick-btn" (click)="setSection('conges')"><i class="fas fa-umbrella-beach"></i> Valider congés</button>
             <button class="quick-btn" (click)="setSection('autorisations')"><i class="fas fa-clock"></i> Valider autorisations</button>
             <button class="quick-btn" (click)="setSection('prets')"><i class="fas fa-hand-holding-usd"></i> Valider prêts</button>
@@ -187,10 +188,15 @@
         </div>
       </div>
 
-      <!-- ✅ EMPLOYÉS — 2 tableaux séparés -->
+      <!-- ==================== EMPLOYÉS ==================== -->
       <div *ngIf="activeSection === 'employes'">
+
+        <!-- ✅ Bouton correctement placé dans page-header -->
         <div class="page-header">
-          <h2><i class="fas fa-users"></i> Liste des employés & chefs</h2>
+          <h2><i class="fas fa-users"></i> Gestion des employés & chefs</h2>
+          <button class="btn-new" (click)="navigateTo('/admin/employes/nouveau')">
+            <i class="fas fa-plus"></i> Ajouter un employé
+          </button>
         </div>
 
         <!-- Tableau Employés -->
@@ -201,7 +207,7 @@
           </div>
           <table class="data-table" *ngIf="getEmployesSansChef().length > 0">
             <thead>
-              <tr><th>#</th><th>Nom complet</th><th>Email</th><th>Téléphone</th></tr>
+              <tr><th>#</th><th>Nom complet</th><th>Email</th><th>Téléphone</th><th>Actions</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let e of getEmployesSansChef(); let i = index">
@@ -212,6 +218,11 @@
                 </td>
                 <td>{{ e.email }}</td>
                 <td>{{ e.telephone || '-' }}</td>
+                <td>
+                  <button class="btn-refuser" (click)="supprimerEmploye(e.id)">
+                    <i class="fas fa-trash"></i> Supprimer
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -228,7 +239,7 @@
           </div>
           <table class="data-table" *ngIf="getChefs().length > 0">
             <thead>
-              <tr><th>#</th><th>Nom complet</th><th>Email</th><th>Téléphone</th></tr>
+              <tr><th>#</th><th>Nom complet</th><th>Email</th><th>Téléphone</th><th>Actions</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let e of getChefs(); let i = index">
@@ -242,6 +253,11 @@
                 </td>
                 <td>{{ e.email }}</td>
                 <td>{{ e.telephone || '-' }}</td>
+                <td>
+                  <button class="btn-refuser" (click)="supprimerEmploye(e.id)">
+                    <i class="fas fa-trash"></i> Supprimer
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -251,7 +267,7 @@
         </div>
       </div>
 
-      <!-- CONGÉS -->
+      <!-- ==================== CONGÉS ==================== -->
       <div *ngIf="activeSection === 'conges'">
         <div class="page-header">
           <h2><i class="fas fa-umbrella-beach"></i> Validation des congés</h2>
@@ -293,7 +309,7 @@
         </div>
       </div>
 
-      <!-- AUTORISATIONS -->
+      <!-- ==================== AUTORISATIONS ==================== -->
       <div *ngIf="activeSection === 'autorisations'">
         <div class="page-header">
           <h2><i class="fas fa-clock"></i> Validation des autorisations</h2>
@@ -334,7 +350,7 @@
         </div>
       </div>
 
-      <!-- PRÊTS -->
+      <!-- ==================== PRÊTS ==================== -->
       <div *ngIf="activeSection === 'prets'">
         <div class="page-header">
           <h2><i class="fas fa-hand-holding-usd"></i> Validation des prêts</h2>
@@ -376,7 +392,7 @@
         </div>
       </div>
 
-      <!-- AVANCES -->
+      <!-- ==================== AVANCES ==================== -->
       <div *ngIf="activeSection === 'avances'">
         <div class="page-header">
           <h2><i class="fas fa-coins"></i> Validation des avances</h2>
@@ -418,7 +434,7 @@
         </div>
       </div>
 
-      <!-- DOCUMENTS -->
+      <!-- ==================== DOCUMENTS ==================== -->
       <div *ngIf="activeSection === 'documents'">
         <div class="page-header">
           <h2><i class="fas fa-file-alt"></i> Validation des documents</h2>

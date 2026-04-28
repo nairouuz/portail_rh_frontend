@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
@@ -9,7 +10,7 @@ type ActiveSection = 'dashboard' | 'conges' | 'autorisations' | 'prets' | 'avanc
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css'],
   encapsulation: ViewEncapsulation.None
@@ -40,6 +41,19 @@ export class AdminDashboardComponent implements OnInit {
   employes:      any[] = [];
   allUtilisateurs: any[] = [];
   recentDemandes: any[] = [];
+
+  // ✅ Gestion ajout employé
+  showAddEmployeForm = false;
+  addEmployeLoading = false;
+  addEmployeError = '';
+  newEmploye = {
+    nom: '',
+    prenom: '',
+    email: '',
+    password: '',
+    telephone: '',
+    role: 'UTILISATEUR'
+  };
 
   private loadedCount = 0;
   private totalRequests = 6;
@@ -210,14 +224,69 @@ export class AdminDashboardComponent implements OnInit {
     return this.allUtilisateurs.find(u => u.id === id) || null;
   }
 
-  // ✅ Filtre uniquement les employés (rôle UTILISATEUR)
   getEmployesSansChef(): any[] {
     return this.allUtilisateurs.filter(u => u.role === 'UTILISATEUR');
   }
 
-  // ✅ Filtre uniquement les chefs
   getChefs(): any[] {
     return this.allUtilisateurs.filter(u => u.role === 'CHEF');
+  }
+
+  // ✅ Ouvrir modal ajout employé
+  ouvrirFormEmploye(): void {
+    this.showAddEmployeForm = true;
+    this.addEmployeError = '';
+    this.newEmploye = {
+      nom: '', prenom: '', email: '',
+      password: '', telephone: '', role: 'UTILISATEUR'
+    };
+  }
+
+  // ✅ Fermer modal
+  fermerFormEmploye(): void {
+    this.showAddEmployeForm = false;
+    this.addEmployeError = '';
+  }
+
+  // ✅ Créer un employé via /api/auth/register
+  ajouterEmploye(): void {
+    if (!this.newEmploye.nom.trim() || !this.newEmploye.prenom.trim() ||
+        !this.newEmploye.email.trim() || !this.newEmploye.password.trim()) {
+      this.addEmployeError = 'Tous les champs obligatoires doivent être remplis';
+      return;
+    }
+
+    this.addEmployeLoading = true;
+    this.addEmployeError = '';
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`,
+      'Content-Type': 'application/json'
+    });
+
+    this.http.post('http://localhost:8080/api/auth/register', this.newEmploye, { headers })
+      .subscribe({
+        next: () => {
+          this.addEmployeLoading = false;
+          this.fermerFormEmploye();
+          this.resetAndReload();
+        },
+        error: (err) => {
+          this.addEmployeLoading = false;
+          this.addEmployeError = err.error?.message || 'Erreur lors de la création';
+        }
+      });
+  }
+
+  // ✅ Supprimer un employé
+  supprimerEmploye(id: number): void {
+    if (!confirm('Voulez-vous vraiment supprimer cet employé ?')) return;
+
+    this.http.delete(`http://localhost:8080/api/utilisateurs/${id}`,
+      { headers: this.getHeaders() }).subscribe({
+      next: () => this.resetAndReload(),
+      error: (err) => console.error('Erreur suppression:', err)
+    });
   }
 
   checkLoading(): void {
@@ -266,6 +335,7 @@ export class AdminDashboardComponent implements OnInit {
     this.recentDemandes = [];
     this.conges = []; this.prets = []; this.avances = [];
     this.autorisations = []; this.documents = [];
+    this.allUtilisateurs = []; this.employes = [];
     this.loading = true;
     this.loadAllData();
   }
@@ -304,7 +374,9 @@ export class AdminDashboardComponent implements OnInit {
   canValider(statut: string): boolean {
     return statut === 'EN_ATTENTE' || statut === 'VALIDEE_CHEF';
   }
-
+navigateTo(route: string): void { 
+  this.router.navigate([route]); 
+}
   getTypeKey(type: string): string {
     const map: any = {
       'Congé': 'conge', 'Prêt': 'pret', 'Avance': 'avance',
