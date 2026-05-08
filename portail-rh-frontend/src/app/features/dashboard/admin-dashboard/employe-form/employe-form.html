@@ -97,7 +97,23 @@
         <option value="CHEF">Chef hiérarchique</option>
       </select>
     </div>
-
+<!-- Chef hiérarchique — visible seulement si rôle = UTILISATEUR -->
+<div class="form-group" *ngIf="demande.role === 'UTILISATEUR'">
+  <label>
+    <i class="fas fa-user-tie"></i>
+    Chef hiérarchique *
+  </label>
+  <select
+    name="chefId"
+    [(ngModel)]="demande.chefId"
+    [required]="demande.role === 'UTILISATEUR'"
+    class="form-control">
+    <option value="" disabled>-- Sélectionner un chef --</option>
+    <option *ngFor="let chef of chefs" [value]="chef.id">
+      {{ chef.prenom }} {{ chef.nom }}
+    </option>
+  </select>
+</div>
     <div *ngIf="errorMessage" style="color: red; margin-bottom: 10px;">
       {{ errorMessage }}
     </div>

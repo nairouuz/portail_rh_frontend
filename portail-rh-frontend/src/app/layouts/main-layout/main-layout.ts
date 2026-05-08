@@ -20,22 +20,14 @@ export class MainLayoutComponent {
     this.user = this.authService.getUser();
   }
 
-  isEmploye(): boolean {
-    return this.authService.isEmploye();
-  }
-
-  isChef(): boolean {
-    return this.authService.isChef();
-  }
-
-  isAdmin(): boolean {
-    return this.authService.isAdmin();
-  }
+  isEmploye(): boolean { return this.authService.isEmploye(); }
+  isChef(): boolean    { return this.authService.isChef(); }
+  isAdmin(): boolean   { return this.authService.isAdmin(); }
 
   getRoleLabel(): string {
     if (this.isEmploye()) return 'Employé';
-    if (this.isChef()) return 'Chef de département';
-    if (this.isAdmin()) return 'Administrateur RH';
+    if (this.isChef())    return 'Chef de département';
+    if (this.isAdmin())   return 'Administrateur RH';
     return 'Invité';
   }
 

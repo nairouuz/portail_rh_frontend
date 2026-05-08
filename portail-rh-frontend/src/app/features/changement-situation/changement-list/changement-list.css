@@ -1,0 +1,18 @@
+.statut-attente {
+  background-color: #856404;
+  color: #fff3cd;
+}
+
+.statut-approuve {
+  background-color: #155724;
+  color: #d4edda;
+}
+
+.statut-refuse {
+  background-color: #721c24;
+  color: #f8d7da;
+}
+
+table tr:hover td {
+  background-color: rgba(201, 169, 110, 0.05);
+}

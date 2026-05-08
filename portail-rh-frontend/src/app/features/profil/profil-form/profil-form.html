@@ -1,83 +1,205 @@
 <div class="profil-container">
-  <div class="header">
-    <div class="header-title">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-title">
+      <i class="fas fa-folder-open"></i>
       <h2>Mon dossier personnel</h2>
-      <p>Consultez vos informations personnelles et professionnelles</p>
+    </div>
+    <button class="btn-nouvelle-demande" (click)="ouvrirModalChangement()">
+      + Nouvelle demande
+    </button>
+  </div>
+
+  <!-- COMPTEURS -->
+  <div class="stats-bar">
+    <div class="stat-chip stat-total">
+      <span class="stat-num">{{ mesChangements.length }}</span> Total
+    </div>
+    <div class="stat-chip stat-attente">
+      <span class="stat-num">{{ getNbParStatut('EN_ATTENTE') }}</span> En attente
+    </div>
+    <div class="stat-chip stat-approuve">
+      <span class="stat-num">{{ getNbParStatut('APPROUVEE') }}</span> Approuvées
+    </div>
+    <div class="stat-chip stat-refuse">
+      <span class="stat-num">{{ getNbParStatut('REFUSEE') }}</span> Refusées
     </div>
   </div>
 
-  <div class="profil-card">
-    <!-- Affichage sous forme de tableau -->
-    <div class="info-section">
-      <h3><i class="fas fa-user"></i> Informations personnelles</h3>
-      <table class="info-table">
-        <tr>
-          <th>Prénom</th>
-          <td>{{ employe.prenom }}</td>
-          <th>Nom</th>
-          <td>{{ employe.nom }}</td>
-        </tr>
-        <tr>
-          <th>Email</th>
-          <td>{{ employe.email }}</td>
-          <th>Téléphone</th>
-          <td>{{ employe.telephone || '-' }}</td>
-        </tr>
-        <tr>
-          <th>Date de naissance</th>
-          <td>{{ employe.dateNaissance || '-' }}</td>
-          <th>CIN</th>
-          <td>{{ employe.cin || '-' }}</td>
-        </tr>
-        <tr>
-          <th>Nationalité</th>
-          <td>{{ employe.nationalite || '-' }}</td>
-          <th>Situation familiale</th>
-          <td>{{ employe.situationFamiliale || '-' }}</td>
-        </tr>
-        <tr>
-          <th>Adresse</th>
-          <td colspan="3">{{ employe.adresse || '-' }}</td>
-        </tr>
+  <!-- VUE TABLEAU -->
+  <div class="table-card" *ngIf="!showInfos">
+    <div class="table-section" *ngIf="mesChangements.length > 0; else aucuneDemande">
+      <table class="demandes-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Situation actuelle</th>
+            <th>Nouvelle situation</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of mesChangements; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ c.ancienSituation }}</td>
+            <td>{{ c.nouvelleSituation }}</td>
+            <td>{{ c.description || '-' }}</td>
+            <td>{{ c.dateDemande | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="badge-statut"
+                    [ngClass]="{
+                      'badge-attente':  c.statut === 'EN_ATTENTE',
+                      'badge-approuve': c.statut === 'APPROUVEE',
+                      'badge-refuse':   c.statut === 'REFUSEE'
+                    }">
+                {{ c.statut === 'EN_ATTENTE' ? 'En attente' :
+                   c.statut === 'APPROUVEE'  ? 'Approuvée'  : 'Refusée' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
-    <div class="info-section">
-      <h3><i class="fas fa-briefcase"></i> Informations professionnelles</h3>
-      <table class="info-table">
-        <tr>
-          <th>Département</th>
-          <td>{{ employe.departement }}</td>
-          <th>Grade / Fonction</th>
-          <td>{{ employe.grade || '-' }}</td>
-        </tr>
-        <tr>
-          <th>Date d'embauche</th>
-          <td>{{ employe.dateEmbauche || '-' }}</td>
-          <th>Salaire brut</th>
-          <td>{{ employe.salaire ? employe.salaire + ' €' : '-' }}</td>
-        </tr>
-      </table>
+    <ng-template #aucuneDemande>
+      <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>Aucune demande de changement pour le moment.</p>
+      </div>
+    </ng-template>
+
+    <div class="voir-dossier-wrap">
+      <button class="btn-voir-dossier" (click)="toggleInfos()">
+        <i class="fas fa-user"></i> Voir mon dossier personnel
+      </button>
+    </div>
+  </div>
+
+  <!-- VUE DOSSIER -->
+  <div *ngIf="showInfos">
+    <div class="retour-wrap">
+      <button class="btn-retour" (click)="toggleInfos()">
+        <i class="fas fa-arrow-left"></i> Retour
+      </button>
     </div>
 
-    <!-- Formulaire de modification -->
-    <div class="edit-section">
-      <h3><i class="fas fa-edit"></i> Modifier mes informations</h3>
-      <form (ngSubmit)="onSubmit()" #profilForm="ngForm">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Téléphone</label>
-            <input type="tel" [(ngModel)]="employe.telephone" name="telephone" class="form-control">
+    <div class="table-card">
+      <!-- Informations personnelles -->
+      <div class="info-section">
+        <h3><i class="fas fa-user"></i> Informations personnelles</h3>
+        <table class="demandes-table info-dossier">
+          <tbody>
+            <tr>
+              <th>Prénom</th>
+              <td>{{ employe.prenom }}</td>
+              <th>Nom</th>
+              <td>{{ employe.nom }}</td>
+            </tr>
+            <tr>
+              <th>Email</th>
+              <td>{{ employe.email }}</td>
+              <th>Téléphone</th>
+              <td>{{ employe.telephone || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Date de naissance</th>
+              <td>{{ employe.dateNaissance || '-' }}</td>
+              <th>CIN</th>
+              <td>{{ employe.cin || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Nationalité</th>
+              <td>{{ employe.nationalite || '-' }}</td>
+              <th>Situation familiale</th>
+              <td>
+                <span class="badge-statut badge-attente">
+                  {{ employe.situationFamiliale || '-' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>Adresse</th>
+              <td colspan="3">{{ employe.adresse || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Informations professionnelles -->
+      <div class="info-section" style="margin-top: 24px;">
+        <h3><i class="fas fa-briefcase"></i> Informations professionnelles</h3>
+        <table class="demandes-table info-dossier">
+          <tbody>
+            <tr>
+              <th>Département</th>
+              <td>{{ employe.departement || '-' }}</td>
+              <th>Grade / Fonction</th>
+              <td>{{ employe.grade || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Date d'embauche</th>
+              <td>{{ employe.dateEmbauche || '-' }}</td>
+              <th>Salaire brut</th>
+              <td>{{ employe.salaire ? employe.salaire + ' TND' : '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modifier coordonnées -->
+      <div class="info-section" style="margin-top: 24px;">
+        <h3><i class="fas fa-edit"></i> Modifier mes coordonnées</h3>
+        <form (ngSubmit)="onSubmit()" #profilForm="ngForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Téléphone</label>
+              <input type="tel" [(ngModel)]="employe.telephone"
+                     name="telephone" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Adresse</label>
+              <input type="text" [(ngModel)]="employe.adresse"
+                     name="adresse" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Téléphone d'urgence</label>
+              <input type="tel" [(ngModel)]="employe.telephoneUrgence"
+                     name="telephoneUrgence" class="form-control">
+            </div>
           </div>
-          <div class="form-group">
-            <label>Adresse</label>
-            <input type="text" [(ngModel)]="employe.adresse" name="adresse" class="form-control">
+          <div class="form-actions">
+            <button type="button" class="btn-annuler" (click)="resetForm()">
+              <i class="fas fa-undo"></i> Réinitialiser
+            </button>
+            <button type="submit" class="btn-soumettre" [disabled]="!profilForm.valid">
+              <i class="fas fa-save"></i> Enregistrer les modifications
+            </button>
           </div>
-        </div>
-        <div class="form-row">
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" *ngIf="showModalChangement" (click)="fermerModalChangement()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-exchange-alt"></i> Demande de changement de situation</h3>
+        <button class="modal-close" (click)="fermerModalChangement()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="soumettreChangement()" #changementForm="ngForm">
+        <div class="modal-body">
           <div class="form-group">
-            <label>Situation familiale</label>
-            <select [(ngModel)]="employe.situationFamiliale" name="situationFamiliale" class="form-control">
+            <label>Situation actuelle <span class="required">*</span></label>
+            <select [(ngModel)]="changementRequest.ancienSituation"
+                    name="ancienSituation" class="form-control" required>
+              <option value="">-- Sélectionnez --</option>
               <option value="Célibataire">Célibataire</option>
               <option value="Marié(e)">Marié(e)</option>
               <option value="Divorcé(e)">Divorcé(e)</option>
@@ -85,16 +207,44 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Téléphone d'urgence</label>
-            <input type="tel" [(ngModel)]="employe.telephoneUrgence" name="telephoneUrgence" class="form-control">
+            <label>Nouvelle situation <span class="required">*</span></label>
+            <select [(ngModel)]="changementRequest.nouvelleSituation"
+                    name="nouvelleSituation" class="form-control" required>
+              <option value="">-- Sélectionnez --</option>
+              <option value="Célibataire">Célibataire</option>
+              <option value="Marié(e)">Marié(e)</option>
+              <option value="Divorcé(e)">Divorcé(e)</option>
+              <option value="Veuf/Veuve">Veuf/Veuve</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Justification / Description</label>
+            <textarea [(ngModel)]="changementRequest.description"
+                      name="description" class="form-control" rows="3"
+                      placeholder="Ex: Je me suis marié(e) le 15/04/2026..."></textarea>
+          </div>
+          <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            Votre demande sera envoyée à l'administrateur RH pour validation.
           </div>
         </div>
-        <div class="form-actions">
-          <button type="submit" class="btn-save" [disabled]="!profilForm.valid">
-            <i class="fas fa-save"></i> Enregistrer les modifications
+        <div class="modal-footer">
+          <button type="button" class="btn-annuler" (click)="fermerModalChangement()">
+            Annuler
+          </button>
+          <button type="submit" class="btn-soumettre"
+                  [disabled]="!changementForm.valid || submitting">
+            <i class="fas fa-paper-plane"></i>
+            {{ submitting ? 'Envoi...' : 'Soumettre la demande' }}
           </button>
         </div>
       </form>
+
+      <div class="success-message" *ngIf="changementSuccess">
+        <i class="fas fa-check-circle"></i>
+        Demande envoyée avec succès ! En attente de validation.
+      </div>
     </div>
   </div>
+
 </div>

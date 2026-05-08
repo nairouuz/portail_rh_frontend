@@ -28,6 +28,13 @@
         <i class="fas fa-tachometer-alt"></i>
         <span>Tableau de bord</span>
       </a>
+
+      <a class="nav-item" [class.active]="activeSection === 'dossier'"
+         (click)="setSection('dossier')">
+        <i class="fas fa-folder-open"></i>
+        <span>Mon dossier personnel</span>
+      </a>
+
       <a class="nav-item" [class.active]="activeSection === 'conges'"
          (click)="setSection('conges')">
         <i class="fas fa-umbrella-beach"></i>
@@ -65,12 +72,6 @@
         <i class="fas fa-file-alt"></i>
         <span>Documents</span>
       </a>
-      <div class="nav-divider"></div>
-      <a class="nav-item" [class.active]="activeSection === 'profil'"
-         (click)="setSection('profil')">
-        <i class="fas fa-user"></i>
-        <span>Mon profil</span>
-      </a>
       <a class="nav-item nav-logout" (click)="logout()">
         <i class="fas fa-sign-out-alt"></i>
         <span>Déconnexion</span>
@@ -88,6 +89,7 @@
       </button>
       <div class="topbar-title">
         <span *ngIf="activeSection === 'dashboard'">Tableau de bord</span>
+        <span *ngIf="activeSection === 'dossier'">Mon dossier personnel</span>
         <span *ngIf="activeSection === 'conges'">Demandes de congé</span>
         <span *ngIf="activeSection === 'prets'">Demandes de prêt</span>
         <span *ngIf="activeSection === 'avances'">Demandes d'avance</span>
@@ -95,18 +97,12 @@
         <span *ngIf="activeSection === 'documents'">Documents administratifs</span>
         <span *ngIf="activeSection === 'profil'">Mon profil</span>
       </div>
-      <div class="topbar-date">
-        <i class="fas fa-calendar-alt"></i>
-        {{ today | date:'EEEE dd MMMM yyyy' }}
-      </div>
     </div>
 
     <div class="page-content">
 
       <!-- ==================== DASHBOARD ==================== -->
       <div *ngIf="activeSection === 'dashboard'">
-
-        <!-- Welcome -->
         <div class="welcome-card">
           <div class="welcome-text">
             <h1>Bonjour, {{ userName }} 👋</h1>
@@ -115,7 +111,6 @@
           <div class="welcome-avatar">{{ getInitials() }}</div>
         </div>
 
-        <!-- KPI Cards -->
         <div class="kpi-grid">
           <div class="kpi-card kpi-conges" (click)="setSection('conges')">
             <div class="kpi-icon"><i class="fas fa-umbrella-beach"></i></div>
@@ -127,7 +122,6 @@
               </div>
             </div>
           </div>
-
           <div class="kpi-card kpi-prets" (click)="setSection('prets')">
             <div class="kpi-icon"><i class="fas fa-hand-holding-usd"></i></div>
             <div class="kpi-body">
@@ -138,7 +132,6 @@
               </div>
             </div>
           </div>
-
           <div class="kpi-card kpi-avances" (click)="setSection('avances')">
             <div class="kpi-icon"><i class="fas fa-coins"></i></div>
             <div class="kpi-body">
@@ -149,7 +142,6 @@
               </div>
             </div>
           </div>
-
           <div class="kpi-card kpi-autorisations" (click)="setSection('autorisations')">
             <div class="kpi-icon"><i class="fas fa-clock"></i></div>
             <div class="kpi-body">
@@ -160,7 +152,6 @@
               </div>
             </div>
           </div>
-
           <div class="kpi-card kpi-documents" (click)="setSection('documents')">
             <div class="kpi-icon"><i class="fas fa-file-alt"></i></div>
             <div class="kpi-body">
@@ -173,7 +164,6 @@
           </div>
         </div>
 
-        <!-- Actions rapides -->
         <div class="section-card">
           <div class="section-header">
             <i class="fas fa-bolt"></i> Actions rapides
@@ -194,10 +184,12 @@
             <button class="quick-btn" (click)="setSection('documents')">
               <i class="fas fa-file-alt"></i> Demander un document
             </button>
+            <button class="quick-btn" (click)="setSection('dossier')">
+              <i class="fas fa-folder-open"></i> Mon dossier personnel
+            </button>
           </div>
         </div>
 
-        <!-- Demandes récentes -->
         <div class="section-card">
           <div class="section-header">
             <i class="fas fa-history"></i> Demandes récentes
@@ -217,7 +209,7 @@
                 <td>{{ d.date | date:'dd/MM/yyyy' }}</td>
                 <td class="detail-cell">{{ getDetailText(d) }}</td>
                 <td><span [class]="'status-pill ' + getStatutClass(d.statut)">{{ getStatutLabel(d.statut) }}</span></td>
-                <td>
+                <td>d
                   <button class="btn-sm" (click)="setSection(d.type === 'Congé' ? 'conges' : d.type === 'Prêt' ? 'prets' : d.type === 'Avance' ? 'avances' : d.type === 'Autorisation' ? 'autorisations' : 'documents')">
                     Voir <i class="fas fa-arrow-right"></i>
                   </button>
@@ -230,6 +222,71 @@
             <p>Aucune demande récente</p>
           </div>
         </div>
+      </div>
+
+      <!-- ==================== MON DOSSIER PERSONNEL ==================== -->
+      <div *ngIf="activeSection === 'dossier'" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h2 style="color: #c9a96e; margin: 0;">Mes demandes de changement de situation</h2>
+            <p style="color: #aaa; margin: 5px 0 0 0;">Mariage, naissance, changement d'adresse, RIB...</p>
+          </div>
+          <button class="btn-new" (click)="navigateTo('/changements/nouveau')">
+            <i class="fas fa-plus"></i> Nouvelle demande
+          </button>
+        </div>
+
+        <div *ngIf="erreurChangements"
+          style="padding: 15px; background-color: #721c24; color: #f8d7da;
+                 border-radius: 8px; margin-bottom: 20px;">
+          ❌ {{ erreurChangements }}
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color: #333; color: #c9a96e;">
+              <th style="padding: 10px; border: 1px solid #444;">Type de changement</th>
+              <th style="padding: 10px; border: 1px solid #444;">Description</th>
+              <th style="padding: 10px; border: 1px solid #444;">Date demande</th>
+              <th style="padding: 10px; border: 1px solid #444;">Statut</th>
+              <th style="padding: 10px; border: 1px solid #444;">Commentaire admin</th>
+              <th style="padding: 10px; border: 1px solid #444;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of mesChangements" style="color: white;">
+              <td style="padding: 8px; border: 1px solid #444;">{{ d.typeChangement }}</td>
+              <td style="padding: 8px; border: 1px solid #444;">{{ d.description }}</td>
+              <td style="padding: 8px; border: 1px solid #444;">{{ d.dateDemande | date:'dd/MM/yyyy' }}</td>
+              <td style="padding: 8px; border: 1px solid #444;">
+                <span [ngClass]="getChangementStatutClass(d.statut)"
+                  style="padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+                  {{ getChangementStatutLabel(d.statut) }}
+                </span>
+              </td>
+              <td style="padding: 8px; border: 1px solid #444; color: #aaa; font-style: italic;">
+                {{ d.commentaireAdmin || '—' }}
+              </td>
+              <td style="padding: 8px; border: 1px solid #444;">
+                <button *ngIf="d.statut === 'EN_ATTENTE'" (click)="annulerChangement(d.id)"
+                  style="background-color: #dc3545; color: white; border: none;
+                         padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                  Annuler
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="mesChangements.length === 0">
+              <td colspan="6" style="padding: 40px; text-align: center; color: #aaa;">
+                <p>Aucune demande de changement de situation</p>
+                <button (click)="nouvelleDemandeChangement()"
+                  style="padding: 8px 16px; background-color: #c9a96e; color: #1a1a1a;
+                         border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                  Créer votre première demande
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- ==================== CONGÉS ==================== -->
@@ -249,7 +306,7 @@
         <div class="section-card">
           <table class="data-table" *ngIf="conges.length > 0">
             <thead>
-              <tr><th>#</th><th>Date début</th><th>Date fin</th><th>Motif</th><th>Statut</th></tr>
+              <tr><th>#</th><th>Date début</th><th>Date fin</th><th>Motif</th><th>Statut</th><th>Action</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let c of conges; let i = index">
@@ -258,6 +315,14 @@
                 <td>{{ c.dateFin | date:'dd/MM/yyyy' }}</td>
                 <td class="detail-cell">{{ c.motif || '-' }}</td>
                 <td><span [class]="'status-pill ' + getStatutClass(c.statut)">{{ getStatutLabel(c.statut) }}</span></td>
+                <!-- ✅ AJOUTER -->
+  <td>
+    <button *ngIf="c.statut === 'EN_ATTENTE'"
+      (click)="annulerConge(c.id)"
+      class="btn-cancel">
+      Annuler
+    </button>
+  </td>
               </tr>
             </tbody>
           </table>
@@ -286,7 +351,7 @@
         <div class="section-card">
           <table class="data-table" *ngIf="prets.length > 0">
             <thead>
-              <tr><th>#</th><th>Date demande</th><th>Montant</th><th>Motif</th><th>Statut</th></tr>
+              <tr><th>#</th><th>Date demande</th><th>Montant</th><th>Motif</th><th>Statut</th><th>Actiont</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let p of prets; let i = index">
@@ -295,6 +360,13 @@
                 <td><strong class="amount">{{ p.montant }} DT</strong></td>
                 <td class="detail-cell">{{ p.motif || '-' }}</td>
                 <td><span [class]="'status-pill ' + getStatutClass(p.statut)">{{ getStatutLabel(p.statut) }}</span></td>
+                <td>
+  <button *ngIf="p.statut === 'EN_ATTENTE'"
+    (click)="annulerPret(p.id)"
+    class="btn-cancel">
+    Annuler
+  </button>
+</td>
               </tr>
             </tbody>
           </table>
@@ -323,7 +395,7 @@
         <div class="section-card">
           <table class="data-table" *ngIf="avances.length > 0">
             <thead>
-              <tr><th>#</th><th>Date demande</th><th>Montant</th><th>Motif</th><th>Statut</th></tr>
+              <tr><th>#</th><th>Date demande</th><th>Montant</th><th>Motif</th><th>Statut</th><th>Action</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let a of avances; let i = index">
@@ -332,6 +404,13 @@
                 <td><strong class="amount">{{ a.montant }} DT</strong></td>
                 <td class="detail-cell">{{ a.motif || '-' }}</td>
                 <td><span [class]="'status-pill ' + getStatutClass(a.statut)">{{ getStatutLabel(a.statut) }}</span></td>
+                <td>
+  <button *ngIf="a.statut === 'EN_ATTENTE'"
+    (click)="annulerAvance(a.id)"
+    class="btn-cancel">
+    Annuler
+  </button>
+</td>
               </tr>
             </tbody>
           </table>
@@ -360,7 +439,7 @@
         <div class="section-card">
           <table class="data-table" *ngIf="autorisations.length > 0">
             <thead>
-              <tr><th>#</th><th>Date demande</th><th>Date sortie</th><th>Motif</th><th>Statut</th></tr>
+              <tr><th>#</th><th>Date demande</th><th>Date sortie</th><th>Motif</th><th>Statut</th><th>Action</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let a of autorisations; let i = index">
@@ -369,6 +448,13 @@
                 <td>{{ a.dateSortie | date:'dd/MM/yyyy' }}</td>
                 <td class="detail-cell">{{ a.motif || '-' }}</td>
                 <td><span [class]="'status-pill ' + getStatutClass(a.statut)">{{ getStatutLabel(a.statut) }}</span></td>
+                <td>
+  <button *ngIf="a.statut === 'EN_ATTENTE'"
+    (click)="annulerAutorisation(a.id)"
+    class="btn-cancel">
+    Annuler
+  </button>
+</td>
               </tr>
             </tbody>
           </table>
@@ -409,7 +495,7 @@
         <div class="section-card">
           <table class="data-table" *ngIf="documents.length > 0">
             <thead>
-              <tr><th>#</th><th>Type document</th><th>Date demande</th><th>Statut</th></tr>
+              <tr><th>#</th><th>Type document</th><th>Date demande</th><th>Statut</th><th>Action</th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let d of documents; let i = index">
@@ -417,6 +503,13 @@
                 <td>{{ d.typeDocument || d.type || '-' }}</td>
                 <td>{{ d.dateDemande | date:'dd/MM/yyyy' }}</td>
                 <td><span [class]="'status-pill ' + getStatutClass(d.statut)">{{ getStatutLabel(d.statut) }}</span></td>
+                <td>
+  <button *ngIf="d.statut === 'EN_ATTENTE'"
+    (click)="annulerDocument(d.id)"
+    class="btn-cancel">
+    Annuler
+  </button>
+</td>
               </tr>
             </tbody>
           </table>
@@ -455,7 +548,6 @@
           </div>
         </div>
 
-        <!-- Récapitulatif demandes -->
         <div class="section-card">
           <div class="section-header">
             <i class="fas fa-chart-bar"></i> Récapitulatif de mes demandes

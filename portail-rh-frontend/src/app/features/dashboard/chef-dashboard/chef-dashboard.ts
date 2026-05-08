@@ -44,6 +44,11 @@ export class ChefDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
+
+  // Ajoute ce console.log pour vérifier
+  console.log('USER:', this.user);
+  console.log('TOKEN:', this.authService.getToken());
+  
     if (this.user) {
       this.userName = `${this.user.prenom || ''} ${this.user.nom || ''}`.trim();
     }
@@ -58,6 +63,8 @@ export class ChefDashboardComponent implements OnInit {
   toggleSidebar(): void { this.sidebarOpen = !this.sidebarOpen; }
 
   loadAllData(): void {
+      console.log('loadAllData called, user:', this.user);  // ← ajouter
+
     if (!this.user) return;
 
     this.http.get<any[]>(
@@ -65,6 +72,7 @@ export class ChefDashboardComponent implements OnInit {
       { headers: this.getHeaders() }
     ).subscribe({
       next: (data) => {
+        console.log('CONGES DATA:', data);  // ← ajouter
         this.conges = data || [];
         this.stats.conges.total     = this.conges.length;
         this.stats.conges.enAttente = this.conges.filter(d => d.statut === 'EN_ATTENTE').length;

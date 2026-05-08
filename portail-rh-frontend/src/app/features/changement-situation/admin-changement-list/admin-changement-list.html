@@ -1,0 +1,117 @@
+<div style="padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+      <h2 style="color: #c9a96e; margin: 0;">Changements de situation personnelle</h2>
+      <p style="color: #aaa; margin: 5px 0 0 0;">Gérez les demandes des employés</p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <!-- Filtre statut -->
+      <select [(ngModel)]="filtreStatut" (change)="filtrer()"
+        style="padding: 8px 14px; background-color: #333; color: #c9a96e;
+               border: 1px solid #555; border-radius: 8px; cursor: pointer;">
+        <option value="">Tous les statuts</option>
+        <option value="EN_ATTENTE">En attente</option>
+        <option value="APPROUVEE">Approuvées</option>
+        <option value="REFUSEE">Refusées</option>
+      </select>
+      <button (click)="fetchAll()"
+        style="padding: 10px 20px; background-color: #444; color: #fff;
+               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+        ↻ Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="erreur"
+    style="padding: 15px; background-color: #721c24; color: #f8d7da;
+           border-radius: 8px; margin-bottom: 20px;">
+    ❌ {{ erreur }}
+  </div>
+
+  <!-- Compteurs -->
+  <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+    <div style="background-color: #333; border-radius: 8px; padding: 12px 20px; color: #aaa; font-size: 14px;">
+      Total : <strong style="color: #c9a96e;">{{ toutesLesDemandes.length }}</strong>
+    </div>
+    <div style="background-color: #333; border-radius: 8px; padding: 12px 20px; color: #aaa; font-size: 14px;">
+      En attente : <strong style="color: #ffc107;">{{ getNbParStatut('EN_ATTENTE') }}</strong>
+    </div>
+    <div style="background-color: #333; border-radius: 8px; padding: 12px 20px; color: #aaa; font-size: 14px;">
+      Approuvées : <strong style="color: #28a745;">{{ getNbParStatut('APPROUVEE') }}</strong>
+    </div>
+    <div style="background-color: #333; border-radius: 8px; padding: 12px 20px; color: #aaa; font-size: 14px;">
+      Refusées : <strong style="color: #dc3545;">{{ getNbParStatut('REFUSEE') }}</strong>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #333; color: #c9a96e;">
+        <th style="padding: 10px; border: 1px solid #444;">Employé</th>
+        <th style="padding: 10px; border: 1px solid #444;">Type de changement</th>
+        <th style="padding: 10px; border: 1px solid #444;">Description</th>
+        <th style="padding: 10px; border: 1px solid #444;">Date demande</th>
+        <th style="padding: 10px; border: 1px solid #444;">Statut</th>
+        <th style="padding: 10px; border: 1px solid #444;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let d of demandesFiltrees" style="color: white;">
+        <td style="padding: 8px; border: 1px solid #444;">
+          <div style="font-weight: bold;">{{ d.nomEmploye }}</div>
+          <div style="color: #aaa; font-size: 12px;">{{ d.emailEmploye }}</div>
+        </td>
+        <td style="padding: 8px; border: 1px solid #444;">{{ d.typeChangement }}</td>
+        <td style="padding: 8px; border: 1px solid #444; max-width: 200px;">
+          <span style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                [title]="d.description">
+            {{ d.description }}
+          </span>
+        </td>
+        <td style="padding: 8px; border: 1px solid #444;">
+          {{ d.dateDemande | date:'dd/MM/yyyy HH:mm' }}
+        </td>
+        <td style="padding: 8px; border: 1px solid #444;">
+          <span [ngClass]="getStatutClass(d.statut)"
+            style="padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+            {{ getStatutLabel(d.statut) }}
+          </span>
+        </td>
+        <td style="padding: 8px; border: 1px solid #444;">
+          <div *ngIf="d.statut === 'EN_ATTENTE'" style="display: flex; flex-direction: column; gap: 6px;">
+            <!-- Commentaire optionnel -->
+            <input type="text" [(ngModel)]="commentaires[d.id]"
+              placeholder="Commentaire (optionnel)"
+              style="padding: 5px 8px; background-color: #333; color: white;
+                     border: 1px solid #555; border-radius: 5px; font-size: 12px; width: 160px;" />
+            <div style="display: flex; gap: 5px;">
+              <button (click)="approuver(d.id)"
+                style="background-color: #28a745; color: white; border: none;
+                       padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; flex: 1;">
+                ✓ Approuver
+              </button>
+              <button (click)="refuser(d.id)"
+                style="background-color: #dc3545; color: white; border: none;
+                       padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; flex: 1;">
+                ✗ Refuser
+              </button>
+            </div>
+          </div>
+          <div *ngIf="d.statut !== 'EN_ATTENTE'" style="color: #aaa; font-style: italic; font-size: 13px;">
+            {{ d.commentaireAdmin || 'Traitée' }}
+          </div>
+        </td>
+      </tr>
+
+      <!-- Aucune demande -->
+      <tr *ngIf="demandesFiltrees.length === 0">
+        <td colspan="6"
+          style="padding: 40px; text-align: center; color: #aaa;">
+          Aucune demande trouvée.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

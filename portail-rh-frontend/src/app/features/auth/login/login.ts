@@ -75,6 +75,6 @@ export class LoginComponent {
           this.errorMessage = err.error?.message || 'Une erreur est survenue.';
         }
       }
-    });
+    }); 
   }
 }

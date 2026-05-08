@@ -1,0 +1,74 @@
+<div class="form-container">
+  <div class="form-header">
+    <div class="header-title">
+      <h2>Nouvelle demande de changement</h2>
+      <p>Remplissez le formulaire ci-dessous</p>
+    </div>
+    <button class="btn-retour" (click)="retour()">
+      <i class="fas fa-arrow-left"></i>
+      Retour
+    </button>
+  </div>
+
+  <form (ngSubmit)="soumettre()" #changementForm="ngForm">
+
+    <!-- Type de changement -->
+    <div class="form-group">
+      <label>
+        <i class="fas fa-exchange-alt"></i>
+        Type de changement *
+      </label>
+      <select
+        name="nouvelleSituation"
+        [(ngModel)]="form.nouvelleSituation"
+        required
+        class="form-control">
+        <option value="" disabled>-- Sélectionner --</option>
+        <option value="Marié(e)">Mariage</option>
+        <option value="Divorcé(e)">Divorce</option>
+        <option value="Veuf/Veuve">Veuvage</option>
+        <option value="Naissance d'un enfant">Naissance d'un enfant</option>
+        <option value="Célibataire">Célibataire</option>
+      </select>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label>
+        <i class="fas fa-file-alt"></i>
+        Description / Détails *
+      </label>
+      <textarea
+        name="description"
+        [(ngModel)]="form.description"
+        required
+        rows="4"
+        class="form-control"
+        placeholder="Décrivez votre changement de situation..."></textarea>
+    </div>
+
+    <!-- Message erreur -->
+    <div *ngIf="erreur" style="color: red; margin-bottom: 10px;">
+      {{ erreur }}
+    </div>
+
+    <!-- Message succès -->
+    <div *ngIf="succes" style="color: green; margin-bottom: 10px;">
+      ✅ Demande soumise avec succès ! Redirection en cours...
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-annuler" (click)="retour()">
+        Annuler
+      </button>
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="!changementForm.valid || chargement">
+        <i class="fas fa-paper-plane"></i>
+        {{ chargement ? 'Envoi en cours...' : 'Soumettre' }}
+      </button>
+    </div>
+
+  </form>
+</div>

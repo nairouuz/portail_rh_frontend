@@ -1,108 +1,111 @@
 <div class="app-layout">
-  <!-- Sidebar -->
+
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <i class="fas fa-building"></i>
-        <span>Portail RH</span>
-      </div>
-    </div>
-    
+<div class="sidebar-header">
+  <div class="logo">
+    <i class="fas fa-building"></i>
+    <span>Portail RH</span>
+  </div>
+</div>
+
+<!-- ✅ AJOUTER ICI -->
+<div class="sidebar-profile">
+  <div class="avatar">
+    <span>{{ user?.prenom?.[0] }}{{ user?.nom?.[0] }}</span>
+  </div>
+  <div class="profile-info">
+    <span class="profile-name">{{ user?.prenom }} {{ user?.nom }}</span>
+    <span class="profile-role">{{ getRoleLabel() }}</span>
+  </div>
+</div>
+
     <nav class="sidebar-nav">
-      
-      <!-- MENU POUR EMPLOYÉ SEULEMENT -->
+
+      <!-- EMPLOYÉ -->
       <ng-container *ngIf="isEmploye()">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-chart-line"></i>
-          <span>Dashboard</span>
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Tableau de bord</span>
+        </a>
+        <a routerLink="/changements" routerLinkActive="active" class="nav-item">
+          <i class="fas fa-folder-open"></i>
+          <span>Mon dossier personnel</span>
         </a>
         <a routerLink="/conges" routerLinkActive="active" class="nav-item">
           <i class="fas fa-umbrella-beach"></i>
-          <span>Mes congés</span>
+          <span>Congés</span>
         </a>
         <a routerLink="/prets" routerLinkActive="active" class="nav-item">
           <i class="fas fa-hand-holding-usd"></i>
-          <span>Mes prêts</span>
+          <span>Prêts</span>
         </a>
         <a routerLink="/avances" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-money-bill-wave"></i>
-          <span>Mes avances</span>
+          <i class="fas fa-coins"></i>
+          <span>Avances</span>
         </a>
         <a routerLink="/autorisations" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-file-alt"></i>
-          <span>Mes autorisations</span>
+          <i class="fas fa-clock"></i>
+          <span>Autorisations</span>
         </a>
         <a routerLink="/documents" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-folder-open"></i>
+          <i class="fas fa-file-alt"></i>
           <span>Documents</span>
-        </a>
-        <a routerLink="/profil" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-user-circle"></i>
-          <span>Mon dossier</span>
         </a>
       </ng-container>
 
-      <!-- MENU POUR CHEF SEULEMENT -->
+      <!-- CHEF -->
       <ng-container *ngIf="isChef()">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-chart-line"></i>
-          <span>Dashboard</span>
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Tableau de bord</span>
         </a>
         <a routerLink="/chef/demandes" routerLinkActive="active" class="nav-item">
           <i class="fas fa-clipboard-list"></i>
           <span>Demandes à valider</span>
         </a>
         <a routerLink="/documents" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-folder-open"></i>
+          <i class="fas fa-file-alt"></i>
           <span>Documents</span>
         </a>
         <a routerLink="/profil" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-user-circle"></i>
-          <span>Mon profil</span>
+          <i class="fas fa-id-card"></i>
+          <span>Mon dossier personnel</span>
         </a>
       </ng-container>
 
-      <!-- MENU POUR ADMIN SEULEMENT -->
+      <!-- ADMIN -->
       <ng-container *ngIf="isAdmin()">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-chart-line"></i>
-          <span>Dashboard</span>
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Tableau de bord</span>
         </a>
         <a routerLink="/admin/demandes" routerLinkActive="active" class="nav-item">
           <i class="fas fa-clipboard-list"></i>
           <span>Toutes les demandes</span>
         </a>
         <a routerLink="/documents" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-folder-open"></i>
+          <i class="fas fa-file-alt"></i>
           <span>Documents</span>
         </a>
         <a routerLink="/profil" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-user-circle"></i>
-          <span>Mon profil</span>
+          <i class="fas fa-id-card"></i>
+          <span>Mon dossier personnel</span>
         </a>
       </ng-container>
 
     </nav>
-    
+
     <div class="sidebar-footer">
-      <div class="user-info">
-        <div class="user-avatar">
-          <span>{{ user?.prenom?.[0] }}{{ user?.nom?.[0] }}</span>
-        </div>
-        <div class="user-details">
-          <span class="user-name">{{ user?.prenom }} {{ user?.nom }}</span>
-          <span class="user-role">{{ getRoleLabel() }}</span>
-        </div>
-      </div>
       <button class="logout-btn" (click)="logout()">
         <i class="fas fa-sign-out-alt"></i>
         <span>Déconnexion</span>
       </button>
     </div>
+
   </aside>
 
-  <!-- Main Content -->
   <div class="main-content">
     <router-outlet></router-outlet>
   </div>
+
 </div>

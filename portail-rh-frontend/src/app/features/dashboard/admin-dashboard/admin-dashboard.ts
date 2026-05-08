@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 
-type ActiveSection = 'dashboard' | 'conges' | 'autorisations' | 'prets' | 'avances' | 'documents' | 'employes';
+type ActiveSection = 'dashboard' | 'conges' | 'autorisations' | 'prets' |
+                     'avances' | 'documents' | 'employes' | 'changements';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -42,17 +43,20 @@ export class AdminDashboardComponent implements OnInit {
   allUtilisateurs: any[] = [];
   recentDemandes: any[] = [];
 
-  // ✅ Gestion ajout employé
+  // ── Changements de situation ──
+  tousChangements: any[] = [];
+  changementsFiltres: any[] = [];
+  filtreStatutChangement = '';
+  commentairesAdmin: { [key: number]: string } = {};
+  erreurChangementsAdmin = '';
+  nbChangementsAttente = 0;
+
   showAddEmployeForm = false;
   addEmployeLoading = false;
   addEmployeError = '';
   newEmploye = {
-    nom: '',
-    prenom: '',
-    email: '',
-    password: '',
-    telephone: '',
-    role: 'UTILISATEUR'
+    nom: '', prenom: '', email: '',
+    password: '', telephone: '', role: 'UTILISATEUR'
   };
 
   private loadedCount = 0;
@@ -71,17 +75,27 @@ export class AdminDashboardComponent implements OnInit {
       this.userName = `${this.user.prenom || ''} ${this.user.nom || ''}`.trim();
     }
     this.loadAllData();
+    this.fetchChangementsCount(); // badge sans charger tout
   }
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({ 'Authorization': `Bearer ${this.authService.getToken()}` });
   }
 
-  setSection(section: ActiveSection): void { this.activeSection = section; }
+  setSection(section: ActiveSection): void {
+    this.activeSection = section;
+    if (section === 'changements') {
+      this.fetchTousChangements();
+    }
+  }
+
   toggleSidebar(): void { this.sidebarOpen = !this.sidebarOpen; }
 
-  loadAllData(): void {
+  // ══════════════════════════════════════════════
+  // Chargement données originales
+  // ══════════════════════════════════════════════
 
+  loadAllData(): void {
     this.http.get<any[]>('http://localhost:8080/api/utilisateurs',
       { headers: this.getHeaders() }).subscribe({
       next: (data) => {
@@ -90,7 +104,7 @@ export class AdminDashboardComponent implements OnInit {
         this.stats.totalEmployes = data?.filter(u => u.role === 'UTILISATEUR').length || 0;
         this.checkLoading();
       },
-      error: (err) => { console.error('ERR utilisateurs:', err); this.checkLoading(); }
+      error: () => this.checkLoading()
     });
 
     this.http.get<any[]>('http://localhost:8080/api/conges',
@@ -98,17 +112,13 @@ export class AdminDashboardComponent implements OnInit {
       next: (data) => {
         this.conges = data || [];
         this.stats.conges.total     = this.conges.length;
-        this.stats.conges.enAttente = this.conges.filter(d =>
-          d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
+        this.stats.conges.enAttente = this.conges.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
         this.stats.conges.approuves = this.conges.filter(d => d.statut === 'VALIDEE_RH').length;
         this.stats.conges.refuses   = this.conges.filter(d => d.statut === 'REFUSEE').length;
-        this.addToRecent(
-          this.conges.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2),
-          'Congé'
-        );
+        this.addToRecent(this.conges.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2), 'Congé');
         this.checkLoading();
       },
-      error: (err) => { console.error('ERR conges:', err); this.checkLoading(); }
+      error: () => this.checkLoading()
     });
 
     this.http.get<any[]>('http://localhost:8080/api/prets',
@@ -116,17 +126,13 @@ export class AdminDashboardComponent implements OnInit {
       next: (data) => {
         this.prets = data || [];
         this.stats.prets.total     = this.prets.length;
-        this.stats.prets.enAttente = this.prets.filter(d =>
-          d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
+        this.stats.prets.enAttente = this.prets.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
         this.stats.prets.approuves = this.prets.filter(d => d.statut === 'VALIDEE_RH').length;
         this.stats.prets.refuses   = this.prets.filter(d => d.statut === 'REFUSEE').length;
-        this.addToRecent(
-          this.prets.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2),
-          'Prêt'
-        );
+        this.addToRecent(this.prets.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2), 'Prêt');
         this.checkLoading();
       },
-      error: (err) => { console.error('ERR prets:', err); this.checkLoading(); }
+      error: () => this.checkLoading()
     });
 
     this.http.get<any[]>('http://localhost:8080/api/avances',
@@ -134,17 +140,13 @@ export class AdminDashboardComponent implements OnInit {
       next: (data) => {
         this.avances = data || [];
         this.stats.avances.total     = this.avances.length;
-        this.stats.avances.enAttente = this.avances.filter(d =>
-          d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
+        this.stats.avances.enAttente = this.avances.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
         this.stats.avances.approuves = this.avances.filter(d => d.statut === 'VALIDEE_RH').length;
         this.stats.avances.refuses   = this.avances.filter(d => d.statut === 'REFUSEE').length;
-        this.addToRecent(
-          this.avances.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2),
-          'Avance'
-        );
+        this.addToRecent(this.avances.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2), 'Avance');
         this.checkLoading();
       },
-      error: (err) => { console.error('ERR avances:', err); this.checkLoading(); }
+      error: () => this.checkLoading()
     });
 
     this.http.get<any[]>('http://localhost:8080/api/autorisations',
@@ -152,20 +154,13 @@ export class AdminDashboardComponent implements OnInit {
       next: (data) => {
         this.autorisations = data || [];
         this.stats.autorisations.total     = this.autorisations.length;
-        this.stats.autorisations.enAttente = this.autorisations.filter(d =>
-          d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
-        this.stats.autorisations.approuves = this.autorisations.filter(d =>
-          d.statut === 'VALIDEE_RH').length;
-        this.stats.autorisations.refuses   = this.autorisations.filter(d =>
-          d.statut === 'REFUSEE').length;
-        this.addToRecent(
-          this.autorisations.filter(d =>
-            d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2),
-          'Autorisation'
-        );
+        this.stats.autorisations.enAttente = this.autorisations.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').length;
+        this.stats.autorisations.approuves = this.autorisations.filter(d => d.statut === 'VALIDEE_RH').length;
+        this.stats.autorisations.refuses   = this.autorisations.filter(d => d.statut === 'REFUSEE').length;
+        this.addToRecent(this.autorisations.filter(d => d.statut === 'EN_ATTENTE' || d.statut === 'VALIDEE_CHEF').slice(0, 2), 'Autorisation');
         this.checkLoading();
       },
-      error: (err) => { console.error('ERR autorisations:', err); this.checkLoading(); }
+      error: () => this.checkLoading()
     });
 
     this.http.get<any[]>('http://localhost:8080/api/documents',
@@ -174,44 +169,136 @@ export class AdminDashboardComponent implements OnInit {
         this.documents = data || [];
         this.stats.documents.total     = this.documents.length;
         this.stats.documents.enAttente = this.documents.filter(d => d.statut === 'EN_ATTENTE').length;
-        this.stats.documents.approuves = this.documents.filter(d =>
-          d.statut === 'VALIDEE_RH' || d.statut === 'APPROUVE').length;
+        this.stats.documents.approuves = this.documents.filter(d => d.statut === 'VALIDEE_RH' || d.statut === 'APPROUVE').length;
         this.stats.documents.refuses   = this.documents.filter(d => d.statut === 'REFUSEE').length;
         this.checkLoading();
       },
-      error: (err) => { console.error('ERR documents:', err); this.checkLoading(); }
+      error: () => this.checkLoading()
     });
   }
 
   addToRecent(data: any[], type: string): void {
     if (data && data.length > 0) {
       const items = data.map((item: any) => ({
-        ...item,
-        type,
+        ...item, type,
         date: item.dateDemande || item.date || new Date(),
         employeNom: this.getEmployeNomFromItem(item)
       }));
       this.recentDemandes.push(...items);
-      this.recentDemandes.sort((a, b) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime());
+      this.recentDemandes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       this.recentDemandes = this.recentDemandes.slice(0, 8);
     }
   }
 
+  checkLoading(): void {
+    this.loadedCount++;
+    if (this.loadedCount >= this.totalRequests) {
+      setTimeout(() => { this.loading = false; this.cdr.detectChanges(); }, 300);
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // Changements de situation
+  // ══════════════════════════════════════════════
+
+  fetchChangementsCount(): void {
+    this.http.get<any[]>('http://localhost:8080/api/changements/admin/toutes',
+      { headers: this.getHeaders() }).subscribe({
+      next: (data) => {
+        this.tousChangements = data ?? [];
+        this.nbChangementsAttente = this.tousChangements.filter(d => d.statut === 'EN_ATTENTE').length;
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  fetchTousChangements(): void {
+    this.erreurChangementsAdmin = '';
+    this.http.get<any[]>('http://localhost:8080/api/changements/admin/toutes',
+      { headers: this.getHeaders() }).subscribe({
+      next: (data) => {
+        this.tousChangements = data ?? [];
+        this.nbChangementsAttente = this.tousChangements.filter(d => d.statut === 'EN_ATTENTE').length;
+        this.filtrerChangements();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.erreurChangementsAdmin = 'Impossible de charger les demandes.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  filtrerChangements(): void {
+    if (!this.filtreStatutChangement) {
+      this.changementsFiltres = [...this.tousChangements];
+    } else {
+      this.changementsFiltres = this.tousChangements.filter(d => d.statut === this.filtreStatutChangement);
+    }
+  }
+
+  getNbChangementsParStatut(statut: string): number {
+    return this.tousChangements.filter(d => d.statut === statut).length;
+  }
+
+  approuverChangement(id: number): void {
+    const commentaire = this.commentairesAdmin[id] || '';
+    this.http.put(`http://localhost:8080/api/changements/admin/${id}/approuver`,
+      { commentaire }, { headers: this.getHeaders() }).subscribe({
+      next: (updated: any) => this.mettreAJourChangement(id, updated),
+      error: () => alert('Erreur lors de l\'approbation.')
+    });
+  }
+
+  refuserChangement(id: number): void {
+    const commentaire = this.commentairesAdmin[id] || '';
+    this.http.put(`http://localhost:8080/api/changements/admin/${id}/refuser`,
+      { commentaire }, { headers: this.getHeaders() }).subscribe({
+      next: (updated: any) => this.mettreAJourChangement(id, updated),
+      error: () => alert('Erreur lors du refus.')
+    });
+  }
+
+  private mettreAJourChangement(id: number, updated: any): void {
+    const index = this.tousChangements.findIndex(d => d.id === id);
+    if (index !== -1) this.tousChangements[index] = updated;
+    this.nbChangementsAttente = this.tousChangements.filter(d => d.statut === 'EN_ATTENTE').length;
+    this.filtrerChangements();
+    delete this.commentairesAdmin[id];
+    this.cdr.detectChanges();
+  }
+
+  getStatutClassChangement(statut: string): string {
+    switch (statut) {
+      case 'EN_ATTENTE': return 'badge-pending';
+      case 'APPROUVEE':  return 'badge-approved';
+      case 'REFUSEE':    return 'badge-rejected';
+      default:           return '';
+    }
+  }
+
+  getStatutLabelChangement(statut: string): string {
+    switch (statut) {
+      case 'EN_ATTENTE': return 'En attente';
+      case 'APPROUVEE':  return 'Approuvée';
+      case 'REFUSEE':    return 'Refusée';
+      default:           return statut;
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // Employés (identique à l'original)
+  // ══════════════════════════════════════════════
+
   getEmployeNomFromItem(item: any): string {
-    if (item.prenomEmploye || item.nomEmploye) {
-      return `${item.prenomEmploye || ''} ${item.nomEmploye || ''}`.trim();
-    }
-    if (item.utilisateur) {
-      return `${item.utilisateur.prenom || ''} ${item.utilisateur.nom || ''}`.trim();
-    }
+    if (item.prenomEmploye || item.nomEmploye) return `${item.prenomEmploye || ''} ${item.nomEmploye || ''}`.trim();
+    if (item.utilisateur) return `${item.utilisateur.prenom || ''} ${item.utilisateur.nom || ''}`.trim();
     if (item.employeId) {
       const u = this.allUtilisateurs.find(u => u.id === item.employeId);
       if (u) return `${u.prenom || ''} ${u.nom || ''}`.trim();
     }
-    if (item.employe) {
-      return `${item.employe.prenom || ''} ${item.employe.nom || ''}`.trim();
-    }
+    if (item.employe) return `${item.employe.prenom || ''} ${item.employe.nom || ''}`.trim();
     return 'Inconnu';
   }
 
@@ -220,80 +307,41 @@ export class AdminDashboardComponent implements OnInit {
     return nom && nom !== 'Inconnu' ? nom[0].toUpperCase() : '?';
   }
 
-  getEmployeById(id: number): any {
-    return this.allUtilisateurs.find(u => u.id === id) || null;
-  }
+  getEmployesSansChef(): any[] { return this.allUtilisateurs.filter(u => u.role === 'UTILISATEUR'); }
+  getChefs(): any[] { return this.allUtilisateurs.filter(u => u.role === 'CHEF'); }
 
-  getEmployesSansChef(): any[] {
-    return this.allUtilisateurs.filter(u => u.role === 'UTILISATEUR');
-  }
-
-  getChefs(): any[] {
-    return this.allUtilisateurs.filter(u => u.role === 'CHEF');
-  }
-
-  // ✅ Ouvrir modal ajout employé
   ouvrirFormEmploye(): void {
     this.showAddEmployeForm = true;
     this.addEmployeError = '';
-    this.newEmploye = {
-      nom: '', prenom: '', email: '',
-      password: '', telephone: '', role: 'UTILISATEUR'
-    };
+    this.newEmploye = { nom: '', prenom: '', email: '', password: '', telephone: '', role: 'UTILISATEUR' };
   }
 
-  // ✅ Fermer modal
-  fermerFormEmploye(): void {
-    this.showAddEmployeForm = false;
-    this.addEmployeError = '';
-  }
+  fermerFormEmploye(): void { this.showAddEmployeForm = false; this.addEmployeError = ''; }
 
-  // ✅ Créer un employé via /api/auth/register
   ajouterEmploye(): void {
     if (!this.newEmploye.nom.trim() || !this.newEmploye.prenom.trim() ||
         !this.newEmploye.email.trim() || !this.newEmploye.password.trim()) {
       this.addEmployeError = 'Tous les champs obligatoires doivent être remplis';
       return;
     }
-
     this.addEmployeLoading = true;
     this.addEmployeError = '';
-
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.authService.getToken()}`,
       'Content-Type': 'application/json'
     });
-
-    this.http.post('http://localhost:8080/api/auth/register', this.newEmploye, { headers })
-      .subscribe({
-        next: () => {
-          this.addEmployeLoading = false;
-          this.fermerFormEmploye();
-          this.resetAndReload();
-        },
-        error: (err) => {
-          this.addEmployeLoading = false;
-          this.addEmployeError = err.error?.message || 'Erreur lors de la création';
-        }
-      });
-  }
-
-  // ✅ Supprimer un employé
-  supprimerEmploye(id: number): void {
-    if (!confirm('Voulez-vous vraiment supprimer cet employé ?')) return;
-
-    this.http.delete(`http://localhost:8080/api/utilisateurs/${id}`,
-      { headers: this.getHeaders() }).subscribe({
-      next: () => this.resetAndReload(),
-      error: (err) => console.error('Erreur suppression:', err)
+    this.http.post('http://localhost:8080/api/auth/register', this.newEmploye, { headers }).subscribe({
+      next: () => { this.addEmployeLoading = false; this.fermerFormEmploye(); this.resetAndReload(); },
+      error: (err) => { this.addEmployeLoading = false; this.addEmployeError = err.error?.message || 'Erreur lors de la création'; }
     });
   }
 
-  checkLoading(): void {
-    this.loadedCount++;
-    if (this.loadedCount >= this.totalRequests) {
-      setTimeout(() => { this.loading = false; this.cdr.detectChanges(); }, 300);
-    }
+  supprimerEmploye(id: number): void {
+    if (!confirm('Voulez-vous vraiment supprimer cet employé ?')) return;
+    this.http.delete(`http://localhost:8080/api/utilisateurs/${id}`, { headers: this.getHeaders() }).subscribe({
+      next: () => this.resetAndReload(),
+      error: (err) => console.error('Erreur suppression:', err)
+    });
   }
 
   getTotalEnAttente(): number {
@@ -353,8 +401,7 @@ export class AdminDashboardComponent implements OnInit {
   getStatutClass(statut: string): string {
     const map: any = {
       'EN_ATTENTE': 'badge-pending', 'VALIDEE_CHEF': 'badge-chef',
-      'VALIDEE_RH': 'badge-approved', 'APPROUVE': 'badge-approved',
-      'REFUSEE': 'badge-rejected'
+      'VALIDEE_RH': 'badge-approved', 'APPROUVE': 'badge-approved', 'REFUSEE': 'badge-rejected'
     };
     return map[statut] || '';
   }
@@ -371,12 +418,10 @@ export class AdminDashboardComponent implements OnInit {
     return d.motif?.substring(0, 35) || '-';
   }
 
-  canValider(statut: string): boolean {
-    return statut === 'EN_ATTENTE' || statut === 'VALIDEE_CHEF';
-  }
-navigateTo(route: string): void { 
-  this.router.navigate([route]); 
-}
+  canValider(statut: string): boolean { return statut === 'EN_ATTENTE' || statut === 'VALIDEE_CHEF'; }
+
+  navigateTo(route: string): void { this.router.navigate([route]); }
+
   getTypeKey(type: string): string {
     const map: any = {
       'Congé': 'conge', 'Prêt': 'pret', 'Avance': 'avance',
